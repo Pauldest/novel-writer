@@ -1,0 +1,54 @@
+[
+  {
+    "chapter_number": 1,
+    "event": "林恩收到不合格成绩单和重修考核通知书。",
+    "characters_involved": [
+      "林恩",
+      "维克多教授",
+      "艾薇儿",
+      "教皇",
+      "主神 / 管理员"
+    ],
+    "location": "",
+    "importance": "normal"
+  },
+  {
+    "chapter_number": 1,
+    "event": "艾德蒙告知林恩退学后的巨额债务及沦为奴隶的后果。",
+    "characters_involved": [
+      "林恩",
+      "维克多教授",
+      "艾薇儿",
+      "教皇",
+      "主神 / 管理员"
+    ],
+    "location": "",
+    "importance": "normal"
+  },
+  {
+    "chapter_number": 1,
+    "event": "贵族学徒卡尔·冯·霍恩海姆嘲讽林恩，并暗示其灵魂异界。",
+    "characters_involved": [
+      "林恩",
+      "维克多教授",
+      "艾薇儿",
+      "教皇",
+      "主神 / 管理员"
+    ],
+    "location": "",
+    "importance": "normal"
+  },
+  {
+    "chapter_number": 1,
+    "event": "林恩回到宿舍，计算债务，思考自身处境。",
+    "characters_involved": [
+      "林恩",
+      "维克多教授",
+      "艾薇儿",
+      "教皇",
+      "主神 / 管理员"
+    ],
+    "location": "",
+    "importance": "normal"
+  }
+]
