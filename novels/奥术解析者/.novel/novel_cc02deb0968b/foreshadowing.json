@@ -19,5 +19,26 @@
     "planted_chapter": 1,
     "resolved_chapter": null,
     "status": "planted"
+  },
+  {
+    "id": "fs_2_3",
+    "description": "【全知解析系统】的启动原因和来源未知",
+    "planted_chapter": 2,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_2_3",
+    "description": "系统知识库中大部分条目显示“权限不足”或“能量不足无法加载”，暗示系统有成长性和限制",
+    "planted_chapter": 2,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_2_3",
+    "description": "系统优化火球术的结果未知，可能带来意想不到的后果或关注",
+    "planted_chapter": 2,
+    "resolved_chapter": null,
+    "status": "planted"
   }
 ]

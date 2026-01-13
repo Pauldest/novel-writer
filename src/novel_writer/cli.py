@@ -180,6 +180,28 @@ def write(
         raise typer.Exit(1)
 
 
+@app.command("write-n")
+def write_n(
+    count: int = typer.Argument(..., help="要生成的章节数量"),
+    max_retries: int = typer.Option(
+        3, "--retries", "-r",
+        help="每章最大修改次数"
+    ),
+    path: Path = typer.Option(
+        Path("."), "--path", "-p",
+        help="项目目录路径"
+    ),
+):
+    """
+    生成指定数量的章节。
+    
+    Usage:
+        novel-writer write-n 10       # 生成接下来10章
+        novel-writer write-n 50       # 生成接下来50章
+    """
+    _batch_write(count=count, max_retries=max_retries, path=path)
+
+
 @app.command("write-all")
 def write_all(
     max_retries: int = typer.Option(
@@ -192,20 +214,23 @@ def write_all(
     ),
 ):
     """
-    生成所有章节 - 从第一章写到最后一章。
-    
-    自动按顺序生成所有未完成的章节，直到全部完成。
+    生成所有剩余章节。
     
     Usage:
-        cd 我的小说
         novel-writer write-all
     """
+    _batch_write(count=None, max_retries=max_retries, path=path)
+
+
+def _batch_write(count: int | None, max_retries: int, path: Path):
+    """Internal function for batch writing chapters."""
     project = find_novel_project(path)
     if not project:
         console.print("[red]错误: 找不到小说项目[/red]")
         raise typer.Exit(1)
     
-    console.print(Panel(f"[bold]《{project.title}》- 批量生成模式[/bold]"))
+    mode_text = f"批量生成 {count} 章" if count else "批量生成所有章节"
+    console.print(Panel(f"[bold]《{project.title}》- {mode_text}[/bold]"))
     
     outlines = project.get_chapter_outlines()
     if not outlines:
@@ -219,7 +244,11 @@ def write_all(
         console.print("[green]所有章节已完成！[/green]")
         raise typer.Exit(0)
     
-    console.print(f"待生成章节: {len(pending)} / {len(outlines)}")
+    # Limit to count if specified
+    if count is not None:
+        pending = pending[:count]
+    
+    console.print(f"待生成章节: {len(pending)} 章")
     console.print()
     
     # Create runner

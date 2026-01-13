@@ -50,5 +50,96 @@
     ],
     "location": "",
     "importance": "normal"
+  },
+  {
+    "chapter_number": 2,
+    "event": "林恩在宿舍陷入绝望，思考矿场命运",
+    "characters_involved": [
+      "林恩",
+      "艾德蒙",
+      "卡尔",
+      "矿场",
+      "竖井"
+    ],
+    "location": "",
+    "importance": "normal"
+  },
+  {
+    "chapter_number": 2,
+    "event": "林恩观察蜡烛燃烧，用科学原理质疑魔法理论",
+    "characters_involved": [
+      "林恩",
+      "艾德蒙",
+      "卡尔",
+      "矿场",
+      "竖井"
+    ],
+    "location": "",
+    "importance": "normal"
+  },
+  {
+    "chapter_number": 2,
+    "event": "【全知解析系统】启动",
+    "characters_involved": [
+      "林恩",
+      "艾德蒙",
+      "卡尔",
+      "矿场",
+      "竖井"
+    ],
+    "location": "",
+    "importance": "normal"
+  },
+  {
+    "chapter_number": 2,
+    "event": "系统解析蜡烛燃烧，揭示其物理化学本质",
+    "characters_involved": [
+      "林恩",
+      "艾德蒙",
+      "卡尔",
+      "矿场",
+      "竖井"
+    ],
+    "location": "",
+    "importance": "normal"
+  },
+  {
+    "chapter_number": 2,
+    "event": "系统解析《基础火球术原理》，揭示标准火球术模型低效、冗余",
+    "characters_involved": [
+      "林恩",
+      "艾德蒙",
+      "卡尔",
+      "矿场",
+      "竖井"
+    ],
+    "location": "",
+    "importance": "normal"
+  },
+  {
+    "chapter_number": 2,
+    "event": "林恩明白自己施法失败是因法术模型问题，而非自身缺陷",
+    "characters_involved": [
+      "林恩",
+      "艾德蒙",
+      "卡尔",
+      "矿场",
+      "竖井"
+    ],
+    "location": "",
+    "importance": "normal"
+  },
+  {
+    "chapter_number": 2,
+    "event": "林恩启动系统【优化】功能，开始重构火球术",
+    "characters_involved": [
+      "林恩",
+      "艾德蒙",
+      "卡尔",
+      "矿场",
+      "竖井"
+    ],
+    "location": "",
+    "importance": "normal"
   }
 ]
