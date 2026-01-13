@@ -1,0 +1,52 @@
+{
+  "novel_id": "novel_9a664a40a273",
+  "title": "仙侠奇缘",
+  "author": "AI Writer",
+  "synopsis": "在这里写你的小说简介，一两段话描述整体故事...\n\n---",
+  "world": {
+    "name": "仙侠奇缘",
+    "genre": "fantasy",
+    "era": "",
+    "magic_system": "",
+    "core_rules": [],
+    "locations": {},
+    "factions": {}
+  },
+  "characters": {
+    "主角名字": {
+      "name": "主角名字",
+      "description": "角色描述：外貌、性格、背景故事等。\n例如：一位年轻的剑客，性格沉稳内敛，背负着家族的秘密...",
+      "status": "alive",
+      "location": "unknown",
+      "inventory": [],
+      "relationships": {},
+      "notes": "",
+      "last_updated_chapter": 0
+    },
+    "配角名字": {
+      "name": "配角名字",
+      "description": "配角的描述...",
+      "status": "alive",
+      "location": "unknown",
+      "inventory": [],
+      "relationships": {},
+      "notes": "",
+      "last_updated_chapter": 0
+    },
+    "反派名字": {
+      "name": "反派名字",
+      "description": "反派的描述...\n\n---\n提示：\n- 每个角色用 `## 名字` 开头\n- 描述可以包含多行\n- 越详细越好，AI 会参考这些设定",
+      "status": "alive",
+      "location": "unknown",
+      "inventory": [],
+      "relationships": {},
+      "notes": "",
+      "last_updated_chapter": 0
+    }
+  },
+  "chapters": [],
+  "total_outline": "# 小说大纲\n\n## 简介\n\n在这里写你的小说简介，一两段话描述整体故事...\n\n---\n\n## 第一章：开端\n\n本章目标：介绍主角，展示日常生活，暗示即将到来的变化。\n主要场景：主角的家乡/日常环境。\n关键事件：某个打破平静的事件发生。\n\n## 第二章：变故\n\n本章目标：主角遭遇重大变故，被迫踏上旅程。\n主要场景：转折发生的地点。\n关键事件：推动主角离开的关键事件。\n\n## 第三章：新世界\n\n本章目标：主角进入新的环境，开始新的生活。\n主要场景：新的地点/环境。\n关键事件：遇到重要的人物或发现。\n\n---\n提示：\n- 每章用 `## 第X章：标题` 格式\n- 章节描述要详细，包含目标、场景、关键事件\n- AI 会根据这些大纲生成正文\n- 可以用中文数字（第一章）或阿拉伯数字（第1章）\n",
+  "style_guide": "# 风格指南\n\n在这里定义你想要的写作风格。\n\n## 整体风格\n\n描述你想要的整体风格，例如：\n- 古风武侠，对话简洁有力\n- 现代都市，轻松幽默\n- 玄幻史诗，气势恢宏\n\n## 叙事视角\n\n- 第一人称 / 第三人称\n- 全知视角 / 限制视角\n\n## 语言特点\n\n- 句子长短偏好\n- 是否使用方言/古语\n- 对话风格\n\n## 禁忌事项\n\n- 不要出现的元素\n- 需要避免的表达方式\n\n---\n提示：风格指南越具体，AI 生成的内容越符合你的预期。",
+  "created_at": "2026-01-14T00:03:31.642502",
+  "updated_at": "2026-01-14T00:04:37.875958"
+}

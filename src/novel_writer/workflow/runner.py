@@ -32,6 +32,8 @@ class ChapterRunner:
     def __init__(
         self,
         novel_id: str,
+        vector_store: Optional[VectorStore] = None,
+        structured_store: Optional[StructuredStore] = None,
         on_status_update: Optional[Callable[[str], None]] = None,
     ):
         """
@@ -39,14 +41,16 @@ class ChapterRunner:
         
         Args:
             novel_id: The novel ID to work with
+            vector_store: Optional pre-initialized vector store
+            structured_store: Optional pre-initialized structured store
             on_status_update: Optional callback for status updates
         """
         self.novel_id = novel_id
         self.on_status_update = on_status_update or (lambda x: None)
         
-        # Initialize stores
-        self.vector_store = VectorStore(novel_id)
-        self.structured_store = StructuredStore(novel_id)
+        # Use provided stores or create new ones
+        self.vector_store = vector_store or VectorStore(novel_id)
+        self.structured_store = structured_store or StructuredStore(novel_id)
         self.context_builder = ContextBuilder(self.vector_store, self.structured_store)
         
         # Initialize agents
