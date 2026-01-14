@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "id": "fs_1_4",
+    "description": "林恩脑海中出现的蓝色光流、几何结构和“不合格”判定界面，疑似某种“系统”或高等存在。",
+    "planted_chapter": 1,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_1_4",
+    "description": "《卡珊德拉的冥想笔记·残卷》记载了类似经历，暗示林恩的遭遇并非偶然，可能有历史先例和未知真相。",
+    "planted_chapter": 1,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_1_4",
+    "description": "“载体魔力亲和度过低，阈值未达到启动标准”的提示，暗示可能存在某种“启动标准”，林恩或许有办法达到。",
+    "planted_chapter": 1,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_1_4",
+    "description": "卡珊德拉的理论认为魔力是“弦”，亲和度是“共振频率”，暗示魔力体系可能有更深层的、可被“理解”的规律。",
+    "planted_chapter": 1,
+    "resolved_chapter": null,
+    "status": "planted"
+  }
+]
