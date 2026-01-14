@@ -105,8 +105,7 @@ novel-writer write-all     # 生成所有剩余章节
 |------|------|------|
 | `add` | 添加项目模板文件 | `novel-writer add` |
 | `write` | 生成下一章 | `novel-writer write` |
-| `write -c N` | 生成第 N 章 | `novel-writer write -c 5` |
-| `write-c N` | 生成第 N 章（简写） | `novel-writer write-c 5` |
+| `write-c N` | 生成第 N 章 | `novel-writer write-c 5` |
 | `write-n N` | 生成接下来 N 章 | `novel-writer write-n 10` |
 | `write-all` | 生成所有剩余章节 | `novel-writer write-all` |
 | `status` | 查看项目进度 | `novel-writer status` |
