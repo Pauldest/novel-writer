@@ -204,7 +204,7 @@ class WriterAgent(BaseAgent[None]):
             
             new_prompt = (
                 "You are continuing a story generation. Here is the last part of the text you generated:\n\n"
-                f"...{full_content[-2000:]}\n\n" # Provide last 2000 chars context
+                f"...{full_content[-1000:]}\n\n" # Provide last 1000 chars context
                 "The text was cut off. Please continue writing exactly from where it stopped.\n"
                 "Do not repeat the last sentence, just continue."
             )

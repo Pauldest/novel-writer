@@ -97,7 +97,7 @@ class ContextBuilder:
         self,
         chapter_outline: ChapterOutline,
         previous_chapter: Optional[Chapter] = None,
-        ending_chars: int = 2000,
+        ending_chars: int = 1000,
         max_memories: int = 5
     ) -> ContextPacket:
         """
