@@ -168,6 +168,7 @@ class ChapterRunner:
         retry_count = 0
         current_content = draft
         review_attempt = 0
+        last_review_result = None  # Track previous review for comparison
         
         while retry_count < max_retries:
             self._update_status(f"Reviewer 正在审核... (尝试 {retry_count + 1}/{max_retries})")
@@ -179,6 +180,7 @@ class ChapterRunner:
                 content=current_content,
                 outline=outline,
                 context=context,
+                previous_review=last_review_result,  # Pass previous review for comparison
             )
             state["review_result"] = review_result
             if trace:
@@ -215,6 +217,8 @@ class ChapterRunner:
                 if trace:
                     trace.save_writer_revision(current_content, retry_count + 1)
             
+            # Save current review for next iteration
+            last_review_result = review_result
             retry_count += 1
             state["retry_count"] = retry_count
         

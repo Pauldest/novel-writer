@@ -1,6 +1,6 @@
 """Reviewer Agent - Checks content for consistency and quality."""
 
-from typing import Literal
+from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
 from .base import BaseAgent
@@ -105,6 +105,7 @@ class ReviewerAgent(BaseAgent[ReviewResult]):
         content: str,
         outline: ChapterOutline,
         context: ContextPacket,
+        previous_review: Optional["ReviewResult"] = None,
     ) -> ReviewResult:
         """
         Review chapter content.
@@ -113,6 +114,7 @@ class ReviewerAgent(BaseAgent[ReviewResult]):
             content: The chapter content to review
             outline: Chapter outline for reference
             context: Context packet with world state
+            previous_review: Optional previous review result for comparison
             
         Returns:
             ReviewResult with detailed feedback
@@ -145,10 +147,26 @@ class ReviewerAgent(BaseAgent[ReviewResult]):
         if outline.foreshadowing:
             prompt_parts.append(f"需埋伏笔: {', '.join(outline.foreshadowing)}")
         
+        # Previous review (if this is a re-review after revision)
+        if previous_review:
+            prompt_parts.append("\n# 上一次审核结果（请对比修改效果）")
+            prompt_parts.append(f"上次评分: {previous_review.score}/100")
+            prompt_parts.append(f"上次状态: {previous_review.status}")
+            if previous_review.issues:
+                prompt_parts.append("上次指出的问题:")
+                for i, issue in enumerate(previous_review.issues, 1):
+                    prompt_parts.append(f"  {i}. [{issue.severity}][{issue.category}] {issue.description}")
+            if previous_review.revision_instructions:
+                prompt_parts.append(f"上次修改指令:\n{previous_review.revision_instructions}")
+            prompt_parts.append("\n请检查 Writer 是否按要求修改了以上问题，并评估修改效果。如有新问题请指出，已解决的问题无需重复。")
+        
         # Content to review
         prompt_parts.append(f"\n# 待审核内容\n\n{content}")
         
-        prompt_parts.append("\n# 任务\n请对以上内容进行全面审核，指出发现的问题并给出评分。")
+        if previous_review:
+            prompt_parts.append("\n# 任务\n请对比上次审核结果，评估修改效果，并对当前版本进行全面审核。")
+        else:
+            prompt_parts.append("\n# 任务\n请对以上内容进行全面审核，指出发现的问题并给出评分。")
         
         prompt = "\n".join(prompt_parts)
         
