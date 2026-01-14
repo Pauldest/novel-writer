@@ -209,6 +209,14 @@ class ChapterRunner:
                 feedback = self.reviewer.format_feedback_for_writer(review_result)
                 if trace:
                     trace.start_timer("Writer")
+                    # Save revise context before calling revise
+                    trace.save_writer_revise_context(
+                        original_content=current_content,
+                        review_feedback=feedback,
+                        context=context,
+                        outline=outline,
+                        revision_number=retry_count + 1,
+                    )
                 current_content = self.writer.revise(
                     original_content=current_content,
                     review_feedback=feedback,

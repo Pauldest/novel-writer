@@ -226,6 +226,56 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         data = self._pydantic_to_dict(result)
         return self._save_json("archivist.json", data, "Archivist")
     
+    def save_writer_revise_context(
+        self,
+        original_content: str,
+        review_feedback: str,
+        context: Any,
+        outline: Any = None,
+        revision_number: int = 1,
+    ) -> Path:
+        """
+        Save Writer agent revision context for debugging.
+        
+        This captures everything the Writer sees when doing a revision,
+        including the context packet, outline, original content, and feedback.
+        
+        Args:
+            original_content: Original chapter content
+            review_feedback: Feedback from Reviewer
+            context: ContextPacket instance
+            outline: ChapterOutline instance (optional)
+            revision_number: Revision attempt number
+            
+        Returns:
+            Path to saved file
+        """
+        # Build context data
+        context_data = {}
+        if hasattr(context, "__dict__"):
+            context_data = {
+                "world_setting": context.world_setting,
+                "style_guide": context.style_guide,
+                "previous_chapter_ending": context.previous_chapter_ending,
+                "character_states": context.character_states,
+                "relevant_memories": context.relevant_memories,
+            }
+        
+        # Build outline data
+        outline_data = None
+        if outline:
+            outline_data = self._pydantic_to_dict(outline)
+        
+        data = {
+            "revision_number": revision_number,
+            "context": context_data,
+            "outline": outline_data,
+            "original_content": original_content,
+            "review_feedback": review_feedback,
+        }
+        
+        return self._save_json(f"writer_revise_context_{revision_number}.json", data, "Writer")
+    
     def get_trace_summary(self) -> dict:
         """
         Get a summary of all trace files.
