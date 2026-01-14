@@ -105,7 +105,12 @@ class WriterAgent(BaseAgent[None]):
         prompt_parts.append("\n---\n")
         prompt_parts.append(f"# 写作任务")
         prompt_parts.append(f"请根据以上上下文和大纲，撰写第{outline.chapter_number}章的正文内容。")
-        prompt_parts.append(f"目标字数: 约{target_word_count}字")
+        prompt_parts.append(f"")
+        prompt_parts.append(f"## 【字数硬性限制】")
+        prompt_parts.append(f"- 目标字数: {target_word_count} 字")
+        prompt_parts.append(f"- 允许范围: {int(target_word_count * 0.8)} ~ {int(target_word_count * 1.2)} 字")
+        prompt_parts.append(f"- ⚠️ 超过 {int(target_word_count * 1.3)} 字将被判定为不合格，需要删减！")
+        prompt_parts.append(f"")
         prompt_parts.append(f"注意：只写大纲中规划的场景，不要自行拓展到后续时间线。")
         prompt_parts.append(f"\n请直接开始写作，不要添加任何元信息:")
         

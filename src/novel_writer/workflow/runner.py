@@ -196,6 +196,7 @@ class ChapterRunner:
                     content=current_content,
                     outline=outline,
                     context=context,
+                    target_word_count=settings.default_chapter_length,
                     previous_review=last_review,
                     attempt=review_chance,
                     trace=trace,

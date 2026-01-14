@@ -12,7 +12,7 @@ from ..memory.context_builder import ContextPacket
 
 class ReviewIssue(BaseModel):
     """单个审核问题"""
-    category: Literal["plot", "character", "setting", "style", "foreshadowing", "logic", "other"]
+    category: Literal["plot", "character", "setting", "style", "foreshadowing", "logic", "length", "other"]
     severity: Literal["minor", "moderate", "major", "critical"]
     description: str
     location: str = Field(default="", description="问题在文中的大致位置")
@@ -83,7 +83,13 @@ REVIEWER_SYSTEM_PROMPT = """你是一位严谨的小说编辑（Reviewer），�
    - 是否有自相矛盾的描写
    - 因果关系是否合理
 
-7. **其他问题** - category 必须为 "other"
+7. **字数控制** - category 必须为 "length"
+   - 检查内容是否严重超出或不足目标字数
+   - 超过目标字数 30% 以上：major 问题
+   - 超过目标字数 50% 以上：critical 问题
+   - 不足目标字数 30% 以上：major 问题
+
+8. **其他问题** - category 必须为 "other"
 
 评分标准：
 - 90-100: 优秀，无需修改
@@ -98,7 +104,7 @@ status 判定：
 - rewrite_needed: 评分 < 50 或有无法修改的结构性问题
 
 **重要**: issues 中的 category 字段必须使用以下英文值之一：
-"plot", "character", "setting", "style", "foreshadowing", "logic", "other"
+"plot", "character", "setting", "style", "foreshadowing", "logic", "length", "other"
 不要使用中文分类名！
 
 **重要**: issues 中的 severity 字段必须使用以下英文值之一：
@@ -129,6 +135,7 @@ class ReviewerAgent(BaseAgent[ReviewResult]):
         content: str,
         outline: ChapterOutline,
         context: ContextPacket,
+        target_word_count: int = 5000,
         previous_review: Optional["ReviewResult"] = None,
         attempt: int = 1,
         trace: Optional["TraceStore"] = None,
@@ -140,6 +147,7 @@ class ReviewerAgent(BaseAgent[ReviewResult]):
             content: The chapter content to review
             outline: Chapter outline for reference
             context: Context packet with world state
+            target_word_count: Target word count for this chapter
             previous_review: Optional previous review result for comparison
             
         Returns:
@@ -172,6 +180,13 @@ class ReviewerAgent(BaseAgent[ReviewResult]):
         prompt_parts.append(f"涉及角色: {', '.join(outline.characters_involved)}")
         if outline.foreshadowing:
             prompt_parts.append(f"需埋伏笔: {', '.join(outline.foreshadowing)}")
+        
+        # Word count info for length checking
+        actual_word_count = len(content)
+        prompt_parts.append(f"\n# 字数信息")
+        prompt_parts.append(f"目标字数: {target_word_count}")
+        prompt_parts.append(f"实际字数: {actual_word_count}")
+        prompt_parts.append(f"字数偏差: {actual_word_count - target_word_count} ({(actual_word_count / target_word_count - 1) * 100:.1f}%)")
         
         # Previous review (if this is a re-review after revision)
         if previous_review:
