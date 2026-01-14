@@ -435,6 +435,58 @@ def read(
     console.print(Panel(content, title=f"第{chapter}章"))
 
 
+@app.command()
+def delete(
+    chapter: int = typer.Option(
+        ..., "--chapter", "-c",
+        help="要删除的章节号"
+    ),
+    force: bool = typer.Option(
+        False, "--force", "-f",
+        help="跳过确认直接删除"
+    ),
+    path: Path = typer.Option(
+        Path("."), "--path", "-p",
+        help="项目目录路径"
+    ),
+):
+    """
+    删除已生成的章节。
+    
+    Usage:
+        novel-writer delete -c 5        # 删除第5章（会确认）
+        novel-writer delete -c 5 -f     # 强制删除第5章
+    """
+    project = find_novel_project(path)
+    if not project:
+        console.print("[red]错误: 找不到小说项目[/red]")
+        raise typer.Exit(1)
+    
+    # Check if chapter exists
+    content = project.read_chapter(chapter)
+    if not content:
+        console.print(f"[yellow]第 {chapter} 章不存在[/yellow]")
+        raise typer.Exit(0)
+    
+    # Confirm deletion
+    if not force:
+        # Show preview
+        preview = content[:200] + "..." if len(content) > 200 else content
+        console.print(Panel(preview, title=f"第{chapter}章 预览"))
+        
+        confirmed = typer.confirm(f"确定要删除第 {chapter} 章吗？此操作不可恢复")
+        if not confirmed:
+            console.print("[dim]已取消[/dim]")
+            raise typer.Exit(0)
+    
+    # Delete
+    if project.delete_chapter(chapter):
+        console.print(f"[green]✓ 第 {chapter} 章已删除[/green]")
+    else:
+        console.print(f"[red]删除失败[/red]")
+        raise typer.Exit(1)
+
+
 # Template files
 ROLES_TEMPLATE = """# 角色设定
 

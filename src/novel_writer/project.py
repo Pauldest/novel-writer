@@ -363,6 +363,52 @@ class NovelProject:
         if generated:
             return self.read_chapter(generated[-1])
         return None
+    
+    def delete_chapter(self, chapter_number: int) -> bool:
+        """
+        Delete a generated chapter and its associated data.
+        
+        This deletes:
+        - Chapter markdown file
+        - Trace files
+        - StructuredStore data (chapter JSON, timeline events, foreshadowing)
+        - VectorStore embeddings
+        
+        Args:
+            chapter_number: The chapter number to delete
+            
+        Returns:
+            True if deleted, False if chapter didn't exist
+        """
+        import shutil
+        
+        deleted = False
+        
+        # Delete from StructuredStore (JSON data, timeline, foreshadowing)
+        if self.structured_store.delete_chapter(chapter_number):
+            deleted = True
+        
+        # Delete from VectorStore (Chroma embeddings)
+        self.vector_store.delete_chapter(chapter_number)
+        
+        # Delete chapter markdown file
+        filename = f"{chapter_number:03d}.md"
+        filepath = self.chapters_dir / filename
+        if filepath.exists():
+            filepath.unlink()
+            deleted = True
+        
+        # Delete trace directory if exists
+        trace_dir = self.chapters_dir / f"chapter_{chapter_number:03d}" / ".trace"
+        if trace_dir.exists():
+            shutil.rmtree(trace_dir)
+        
+        # Delete chapter directory if empty
+        chapter_dir = self.chapters_dir / f"chapter_{chapter_number:03d}"
+        if chapter_dir.exists() and not any(chapter_dir.iterdir()):
+            chapter_dir.rmdir()
+        
+        return deleted
 
 
 def find_novel_project(start_path: Path = None) -> Optional[NovelProject]:

@@ -203,6 +203,38 @@ class StructuredStore:
             return 0
         return len(self._novel.chapters)
     
+    def delete_chapter(self, chapter_number: int) -> bool:
+        """
+        Delete a chapter and its associated data.
+        
+        Args:
+            chapter_number: The chapter number to delete
+            
+        Returns:
+            True if deleted, False if chapter didn't exist
+        """
+        if not self._novel:
+            return False
+        
+        # Remove from novel's chapter list
+        chapter = self._novel.get_chapter(chapter_number)
+        if chapter:
+            self._novel.chapters.remove(chapter)
+        
+        # Delete chapter JSON file
+        chapter_file = self.chapters_dir / f"chapter_{chapter_number:03d}.json"
+        if chapter_file.exists():
+            chapter_file.unlink()
+        
+        # Remove timeline events for this chapter
+        self._timeline = [e for e in self._timeline if e.chapter_number != chapter_number]
+        
+        # Remove foreshadowing planted in this chapter
+        self._foreshadowing = [f for f in self._foreshadowing if f.planted_chapter != chapter_number]
+        
+        self._save()
+        return chapter is not None
+    
     # Timeline operations
     def add_timeline_event(self, event: TimelineEvent):
         """Add a timeline event."""
