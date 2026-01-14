@@ -94,8 +94,6 @@ class WriterAgent(BaseAgent[None]):
         # Save trace if enabled
         if trace:
             trace.save_writer_start_context(
-                outline=outline,
-                context=context,
                 target_word_count=target_word_count,
                 full_prompt=prompt
             )
@@ -174,10 +172,7 @@ class WriterAgent(BaseAgent[None]):
         
         if trace:
             trace.save_writer_revise_context(
-                original_content=original_content,
-                review_feedback=review_feedback,
-                context=context,
-                outline=outline,
+                revision_number=1, # Default or passed locally? The original code didn't have revision_number arg in the caller args, but revision_number=1 in save call. Let's keep 1 or see if we can get it. Method doesn't have it.
                 full_prompt=prompt
             )
         

@@ -200,21 +200,8 @@ class ReviewerAgent(BaseAgent[ReviewResult]):
         
         if trace:
             trace.save_reviewer_context(
-                content=content,
-                outline=outline,
-                context=context,
-                previous_review=previous_review,
-                # Review number is not passed here, let trace store handle it or we need to pass it?
-                # The TraceStore.save_reviewer_context accepts 'attempt', but we don't have it here.
-                # However, the previous code called trace.save_reviewer_context with attempt in runner.py.
-                # Use default=1 here if not available, or add attempt arg?
-                # Looking at usage in runner loop:
-                # review_result = self.reviewer.run(..., previous_review=last_review_result)
-                # It doesn't pass attempt.
-                # But TraceStore adds new file for each call.
-                # Let's add 'attempt' argument to run() as well for better logging.
-                attempt=attempt,
-                full_prompt=prompt
+                full_prompt=prompt,
+                attempt=attempt
             )
         
         return self.invoke(prompt)

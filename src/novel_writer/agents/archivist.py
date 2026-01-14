@@ -132,7 +132,7 @@ class ArchivistAgent(BaseAgent[ArchiveResult]):
         prompt = "\n".join(prompt_parts)
         
         if trace:
-            trace.save_archivist_context(chapter=chapter, full_prompt=prompt)
+            trace.save_archivist_context(full_prompt=prompt)
             
         # Extract information
         result: ArchiveResult = self.invoke(prompt)

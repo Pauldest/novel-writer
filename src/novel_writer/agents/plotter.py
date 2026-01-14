@@ -125,12 +125,7 @@ class PlotterAgent(BaseAgent[PlotterOutput]):
         prompt = "\n".join(context_parts)
         
         if trace:
-            trace.save_plotter_context(
-                director_output=director_output,
-                novel=novel,
-                previous_chapter_summary=previous_chapter_summary,
-                full_prompt=prompt
-            )
+            trace.save_plotter_context(full_prompt=prompt)
             
         plotter_output: PlotterOutput = self.invoke(prompt)
         

@@ -119,11 +119,6 @@ class DirectorAgent(BaseAgent[DirectorOutput]):
         prompt = "\n".join(context_parts)
         
         if trace:
-            trace.save_director_context(
-                novel=novel, 
-                next_chapter_number=next_chapter_number, 
-                user_goal=user_goal or "",
-                full_prompt=prompt
-            )
+            trace.save_director_context(full_prompt=prompt)
             
         return self.invoke(prompt)
