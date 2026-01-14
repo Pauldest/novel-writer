@@ -159,9 +159,9 @@ class ChapterRunner:
         
         # Step 4 & 5: Two-tier version/review loop
         # Outer loop: Writer versions (max 3)
-        # Inner loop: Review chances per version (max 3, no revision between reviews)
+        # Inner loop: Review chances per version (max 2, no revision between reviews)
         max_versions = 3
-        max_reviews_per_version = 3
+        max_reviews_per_version = 2
         
         current_content = None
         final_review_result = None
