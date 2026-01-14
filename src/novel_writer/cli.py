@@ -435,12 +435,9 @@ def read(
     console.print(Panel(content, title=f"第{chapter}章"))
 
 
-@app.command()
-def delete(
-    chapter: int = typer.Option(
-        ..., "--chapter", "-c",
-        help="要删除的章节号"
-    ),
+@app.command("delete-c")
+def delete_chapter_cmd(
+    chapter: int = typer.Argument(..., help="要删除的章节号"),
     force: bool = typer.Option(
         False, "--force", "-f",
         help="跳过确认直接删除"
@@ -454,8 +451,8 @@ def delete(
     删除已生成的章节。
     
     Usage:
-        novel-writer delete -c 5        # 删除第5章（会确认）
-        novel-writer delete -c 5 -f     # 强制删除第5章
+        novel-writer delete-c 5        # 删除第5章（会确认）
+        novel-writer delete-c 5 -f     # 强制删除第5章
     """
     project = find_novel_project(path)
     if not project:
