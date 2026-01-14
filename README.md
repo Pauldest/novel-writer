@@ -22,7 +22,7 @@ cd novel-writer
 
 # 安装依赖（建议使用虚拟环境）
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source .venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -e .
 ```
 
