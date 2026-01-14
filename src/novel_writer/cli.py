@@ -21,20 +21,21 @@ console = Console()
 
 
 @app.command()
-def init(
+def add(
     path: Path = typer.Argument(
         Path("."), 
         help="项目目录路径，默认为当前目录"
     ),
 ):
     """
-    初始化小说项目 - 创建模板文件。
+    添加小说项目模板文件。
     
     Usage:
         mkdir 我的小说 && cd 我的小说
-        novel-writer init
+        novel-writer add
     
-    这会创建 roles.md 和 outline.md 模板文件。
+    这会创建 roles.md、outline.md 和 style.md 模板文件。
+    已存在的文件不会被覆盖。
     """
     path = path.resolve()
     
@@ -47,27 +48,46 @@ def init(
     outline_file = path / "outline.md"
     style_file = path / "style.md"
     
+    created_count = 0
+    
     if not roles_file.exists():
         roles_file.write_text(ROLES_TEMPLATE, encoding="utf-8")
         console.print(f"[green]✓ 创建 roles.md[/green]")
+        created_count += 1
+    else:
+        console.print(f"[dim]⊘ roles.md 已存在，跳过[/dim]")
     
     if not outline_file.exists():
         outline_file.write_text(OUTLINE_TEMPLATE, encoding="utf-8")
         console.print(f"[green]✓ 创建 outline.md[/green]")
+        created_count += 1
+    else:
+        console.print(f"[dim]⊘ outline.md 已存在，跳过[/dim]")
     
     if not style_file.exists():
         style_file.write_text(STYLE_TEMPLATE, encoding="utf-8")
         console.print(f"[green]✓ 创建 style.md[/green]")
+        created_count += 1
+    else:
+        console.print(f"[dim]⊘ style.md 已存在，跳过[/dim]")
     
-    console.print(Panel(
-        f"[bold]小说项目已初始化![/bold]\n\n"
-        f"目录: {path}\n\n"
-        f"下一步:\n"
-        f"1. 编辑 [cyan]roles.md[/cyan] 添加角色\n"
-        f"2. 编辑 [cyan]outline.md[/cyan] 添加大纲\n"
-        f"3. 运行 [cyan]novel-writer write[/cyan] 生成章节",
-        title="✨ 初始化完成"
-    ))
+    if created_count > 0:
+        console.print(Panel(
+            f"[bold]小说项目模板已添加![/bold]\n\n"
+            f"目录: {path}\n\n"
+            f"下一步:\n"
+            f"1. 编辑 [cyan]roles.md[/cyan] 添加角色\n"
+            f"2. 编辑 [cyan]outline.md[/cyan] 添加大纲\n"
+            f"3. 运行 [cyan]novel-writer write[/cyan] 生成章节",
+            title="✨ 添加完成"
+        ))
+    else:
+        console.print(Panel(
+            f"[bold]项目文件已存在[/bold]\n\n"
+            f"目录: {path}\n\n"
+            f"所有模板文件都已存在，无需添加。",
+            title="ℹ️ 无变更"
+        ))
 
 
 @app.command("write-c")
