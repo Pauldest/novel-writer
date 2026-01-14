@@ -1,6 +1,8 @@
 """Plotter Agent - Generates detailed chapter outlines."""
 
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..trace_store import TraceStore
 from pydantic import BaseModel, Field
 
 from .base import BaseAgent
@@ -70,6 +72,7 @@ class PlotterAgent(BaseAgent[PlotterOutput]):
         director_output: DirectorOutput,
         novel: Novel,
         previous_chapter_summary: Optional[str] = None,
+        trace: Optional["TraceStore"] = None,
     ) -> tuple[PlotterOutput, "ChapterOutline"]:
         """
         Generate detailed chapter outline from director's instructions.
@@ -120,6 +123,15 @@ class PlotterAgent(BaseAgent[PlotterOutput]):
         
         # Invoke LLM
         prompt = "\n".join(context_parts)
+        
+        if trace:
+            trace.save_plotter_context(
+                director_output=director_output,
+                novel=novel,
+                previous_chapter_summary=previous_chapter_summary,
+                full_prompt=prompt
+            )
+            
         plotter_output: PlotterOutput = self.invoke(prompt)
         
         # Convert to ChapterOutline

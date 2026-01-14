@@ -107,7 +107,7 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
             return delta.total_seconds() * 1000
         return None
     
-    def save_director_context(self, novel: Any, next_chapter_number: int, user_goal: str) -> Path:
+    def save_director_context(self, novel: Any, next_chapter_number: int, user_goal: str, full_prompt: Optional[str] = None) -> Path:
         """
         Save Director agent input context.
         """
@@ -116,6 +116,7 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
             "next_chapter_number": next_chapter_number,
             "user_goal": user_goal,
             "novel_summary": getattr(novel, "synopsis", ""),
+            "full_prompt": full_prompt,
         }
         return self._save_json("director_context.json", data, "Director")
 
@@ -136,7 +137,8 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         self, 
         director_output: Any, 
         novel: Any, 
-        previous_chapter_summary: Optional[str]
+        previous_chapter_summary: Optional[str],
+        full_prompt: Optional[str] = None
     ) -> Path:
         """
         Save Plotter agent input context.
@@ -145,6 +147,7 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
             "director_output": self._pydantic_to_dict(director_output),
             "novel_title": getattr(novel, "title", "Unknown"),
             "previous_chapter_summary": previous_chapter_summary,
+            "full_prompt": full_prompt,
         }
         return self._save_json("plotter_context.json", data, "Plotter")
 
@@ -194,7 +197,8 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         self,
         outline: Any,
         context: Any,
-        target_word_count: int
+        target_word_count: int,
+        full_prompt: Optional[str] = None
     ) -> Path:
         """
         Save Writer agent input context (initial run).
@@ -214,6 +218,7 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
             "outline": self._pydantic_to_dict(outline),
             "context": context_data,
             "target_word_count": target_word_count,
+            "full_prompt": full_prompt,
         }
         return self._save_json("writer_start_context.json", data, "Writer")
 
@@ -260,7 +265,8 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         outline: Any,
         context: Any,
         previous_review: Any = None,
-        attempt: int = 1
+        attempt: int = 1,
+        full_prompt: Optional[str] = None
     ) -> Path:
         """
         Save Reviewer agent input context.
@@ -280,6 +286,7 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
             "context": context_data,
             "previous_review": self._pydantic_to_dict(previous_review) if previous_review else None,
             "attempt": attempt,
+            "full_prompt": full_prompt,
         }
         return self._save_json(f"reviewer_context_{attempt}.json", data, "Reviewer")
 
@@ -297,7 +304,7 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         data = self._pydantic_to_dict(result)
         return self._save_json(f"reviewer_{attempt}.json", data, "Reviewer")
     
-    def save_archivist_context(self, chapter: Any) -> Path:
+    def save_archivist_context(self, chapter: Any, full_prompt: Optional[str] = None) -> Path:
         """
         Save Archivist agent input context.
         """
@@ -305,6 +312,7 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
             "chapter_number": getattr(chapter, "chapter_number", 0),
             "title": getattr(chapter, "title", ""),
             "content_length": getattr(chapter, "word_count", 0),
+            "full_prompt": full_prompt,
         }
         return self._save_json("archivist_context.json", data, "Archivist")
 
@@ -328,6 +336,7 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         context: Any,
         outline: Any = None,
         revision_number: int = 1,
+        full_prompt: Optional[str] = None,
     ) -> Path:
         """
         Save Writer agent revision context for debugging.
@@ -367,6 +376,7 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
             "outline": outline_data,
             "original_content": original_content,
             "review_feedback": review_feedback,
+            "full_prompt": full_prompt,
         }
         
         return self._save_json(f"writer_revise_context_{revision_number}.json", data, "Writer")

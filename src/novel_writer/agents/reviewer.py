@@ -1,6 +1,8 @@
 """Reviewer Agent - Checks content for consistency and quality."""
 
-from typing import Literal, Optional
+from typing import Literal, Optional, TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..trace_store import TraceStore
 from pydantic import BaseModel, Field
 
 from .base import BaseAgent
@@ -128,6 +130,8 @@ class ReviewerAgent(BaseAgent[ReviewResult]):
         outline: ChapterOutline,
         context: ContextPacket,
         previous_review: Optional["ReviewResult"] = None,
+        attempt: int = 1,
+        trace: Optional["TraceStore"] = None,
     ) -> ReviewResult:
         """
         Review chapter content.
@@ -191,6 +195,27 @@ class ReviewerAgent(BaseAgent[ReviewResult]):
             prompt_parts.append("\n# 任务\n请对以上内容进行全面审核，指出发现的问题并给出评分。")
         
         prompt = "\n".join(prompt_parts)
+        
+        prompt = "\n".join(prompt_parts)
+        
+        if trace:
+            trace.save_reviewer_context(
+                content=content,
+                outline=outline,
+                context=context,
+                previous_review=previous_review,
+                # Review number is not passed here, let trace store handle it or we need to pass it?
+                # The TraceStore.save_reviewer_context accepts 'attempt', but we don't have it here.
+                # However, the previous code called trace.save_reviewer_context with attempt in runner.py.
+                # Use default=1 here if not available, or add attempt arg?
+                # Looking at usage in runner loop:
+                # review_result = self.reviewer.run(..., previous_review=last_review_result)
+                # It doesn't pass attempt.
+                # But TraceStore adds new file for each call.
+                # Let's add 'attempt' argument to run() as well for better logging.
+                attempt=attempt,
+                full_prompt=prompt
+            )
         
         return self.invoke(prompt)
     

@@ -116,11 +116,11 @@ class ChapterRunner:
         self._update_status("Director 正在规划章节...")
         if trace:
             trace.start_timer("Director")
-            trace.save_director_context(novel, chapter_number, chapter_goal)
         director_output = self.director.run(
             novel=novel,
             next_chapter_number=chapter_number,
             user_goal=chapter_goal,
+            trace=trace,
         )
         if trace:
             trace.save_director(director_output)
@@ -130,11 +130,11 @@ class ChapterRunner:
         previous_chapter = novel.get_latest_chapter()
         if trace:
             trace.start_timer("Plotter")
-            trace.save_plotter_context(director_output, novel, previous_chapter.summary if previous_chapter else None)
         plotter_output, outline = self.plotter.run(
             director_output=director_output,
             novel=novel,
             previous_chapter_summary=previous_chapter.summary if previous_chapter else None,
+            trace=trace,
         )
         state["outline"] = outline
         if trace:
@@ -156,15 +156,11 @@ class ChapterRunner:
         self._update_status("Writer 正在撰写正文...")
         if trace:
             trace.start_timer("Writer")
-            trace.save_writer_start_context(
-                outline=outline,
-                context=context,
-                target_word_count=settings.default_chapter_length
-            )
         draft = self.writer.run(
             outline=outline,
             context=context,
             target_word_count=settings.default_chapter_length,
+            trace=trace,
         )
         state["draft"] = draft
         if trace:
@@ -182,18 +178,13 @@ class ChapterRunner:
             
             if trace:
                 trace.start_timer("Reviewer")
-                trace.save_reviewer_context(
-                    content=current_content,
-                    outline=outline,
-                    context=context,
-                    previous_review=last_review_result,
-                    attempt=review_attempt
-                )
             review_result = self.reviewer.run(
                 content=current_content,
                 outline=outline,
                 context=context,
                 previous_review=last_review_result,  # Pass previous review for comparison
+                attempt=review_attempt,
+                trace=trace,
             )
             state["review_result"] = review_result
             if trace:
@@ -209,15 +200,11 @@ class ChapterRunner:
                 self._update_status("需要重写，重新生成...")
                 if trace:
                     trace.start_timer("Writer")
-                    trace.save_writer_start_context(
-                        outline=outline,
-                        context=context,
-                        target_word_count=settings.default_chapter_length
-                    )
                 current_content = self.writer.run(
                     outline=outline,
                     context=context,
                     target_word_count=settings.default_chapter_length,
+                    trace=trace,
                 )
                 if trace:
                     trace.save_writer_revision(current_content, retry_count + 1)
@@ -228,18 +215,12 @@ class ChapterRunner:
                 if trace:
                     trace.start_timer("Writer")
                     # Save revise context before calling revise
-                    trace.save_writer_revise_context(
-                        original_content=current_content,
-                        review_feedback=feedback,
-                        context=context,
-                        outline=outline,
-                        revision_number=retry_count + 1,
-                    )
                 current_content = self.writer.revise(
                     original_content=current_content,
                     review_feedback=feedback,
                     context=context,
                     outline=outline,
+                    trace=trace,
                 )
                 if trace:
                     trace.save_writer_revision(current_content, retry_count + 1)
@@ -268,11 +249,11 @@ class ChapterRunner:
         self._update_status("Archivist 正在归档...")
         if trace:
             trace.start_timer("Archivist")
-            trace.save_archivist_context(chapter)
         archive_result = self.archivist.run(
             chapter=chapter,
             vector_store=self.vector_store,
             structured_store=self.structured_store,
+            trace=trace,
         )
         if trace:
             trace.save_archivist(archive_result)

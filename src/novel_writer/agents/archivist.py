@@ -1,6 +1,8 @@
 """Archivist Agent - Extracts and archives key information from chapters."""
 
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..trace_store import TraceStore
 from pydantic import BaseModel, Field
 
 from .base import BaseAgent
@@ -90,6 +92,7 @@ class ArchivistAgent(BaseAgent[ArchiveResult]):
         chapter: Chapter,
         vector_store: VectorStore,
         structured_store: StructuredStore,
+        trace: Optional["TraceStore"] = None,
     ) -> ArchiveResult:
         """
         Archive a completed chapter.
@@ -128,6 +131,9 @@ class ArchivistAgent(BaseAgent[ArchiveResult]):
         
         prompt = "\n".join(prompt_parts)
         
+        if trace:
+            trace.save_archivist_context(chapter=chapter, full_prompt=prompt)
+            
         # Extract information
         result: ArchiveResult = self.invoke(prompt)
         

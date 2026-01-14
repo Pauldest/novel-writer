@@ -1,5 +1,8 @@
 """Writer Agent - Generates chapter content based on outline and context."""
 
+from typing import Optional, TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..trace_store import TraceStore
 from .base import BaseAgent
 from ..memory.context_builder import ContextPacket
 from ..models import ChapterOutline
@@ -59,6 +62,7 @@ class WriterAgent(BaseAgent[None]):
         outline: ChapterOutline,
         context: ContextPacket,
         target_word_count: int = 3000,
+        trace: Optional["TraceStore"] = None,
     ) -> str:
         """
         Generate chapter content.
@@ -87,6 +91,15 @@ class WriterAgent(BaseAgent[None]):
         
         prompt = "\n".join(prompt_parts)
         
+        # Save trace if enabled
+        if trace:
+            trace.save_writer_start_context(
+                outline=outline,
+                context=context,
+                target_word_count=target_word_count,
+                full_prompt=prompt
+            )
+            
         # Generate content with continuation support
         return self._generate_with_continuation(prompt)
     
@@ -96,6 +109,7 @@ class WriterAgent(BaseAgent[None]):
         review_feedback: str,
         context: ContextPacket,
         outline: ChapterOutline = None,
+        trace: Optional["TraceStore"] = None,
     ) -> str:
         """
         Revise content based on reviewer feedback.
@@ -155,6 +169,17 @@ class WriterAgent(BaseAgent[None]):
         prompt_parts.append("输出完整的修改后内容:")
         
         prompt = "\n".join(prompt_parts)
+        
+
+        
+        if trace:
+            trace.save_writer_revise_context(
+                original_content=original_content,
+                review_feedback=review_feedback,
+                context=context,
+                outline=outline,
+                full_prompt=prompt
+            )
         
         return self._generate_with_continuation(prompt)
 

@@ -1,6 +1,8 @@
 """Director Agent - Orchestrates the overall novel writing process."""
 
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..trace_store import TraceStore
 from pydantic import BaseModel, Field
 
 from .base import BaseAgent
@@ -63,6 +65,7 @@ class DirectorAgent(BaseAgent[DirectorOutput]):
         novel: Novel,
         next_chapter_number: int,
         user_goal: Optional[str] = None,
+        trace: Optional["TraceStore"] = None,
     ) -> DirectorOutput:
         """
         Generate directives for the next chapter.
@@ -114,4 +117,13 @@ class DirectorAgent(BaseAgent[DirectorOutput]):
         
         # Invoke LLM
         prompt = "\n".join(context_parts)
+        
+        if trace:
+            trace.save_director_context(
+                novel=novel, 
+                next_chapter_number=next_chapter_number, 
+                user_goal=user_goal or "",
+                full_prompt=prompt
+            )
+            
         return self.invoke(prompt)
