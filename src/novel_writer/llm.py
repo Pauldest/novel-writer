@@ -84,17 +84,21 @@ class DeepSeekStructuredLLM:
     
     def invoke(self, messages: list) -> T:
         """Invoke LLM and parse structured response."""
-        # Add JSON format instruction to the last message
-        schema_json = self.response_schema.model_json_schema()
+        # Generate example JSON structure from schema
+        example_json = self._generate_example_json(self.response_schema)
+        
         format_instruction = f"""
 
-请严格按照以下JSON格式返回响应，不要包含任何其他文字说明：
+【重要】请严格按照以下JSON格式返回你的响应。只返回JSON，不要有其他文字：
 
 ```json
-{json.dumps(schema_json, ensure_ascii=False, indent=2)}
+{json.dumps(example_json, ensure_ascii=False, indent=2)}
 ```
 
-只返回JSON对象，不要有任何前缀或后缀文字。"""
+注意：
+1. 只返回一个JSON对象
+2. 所有字段都必须填写实际内容
+3. 不要返回schema定义，要返回填充了实际数据的JSON"""
         
         # Modify the last human message to include format instruction
         modified_messages = list(messages)
@@ -132,3 +136,40 @@ class DeepSeekStructuredLLM:
         
         # Return as-is and hope for the best
         return text.strip()
+    
+    def _generate_example_json(self, schema: type[BaseModel]) -> dict:
+        """Generate example JSON with placeholder values from a Pydantic model."""
+        example = {}
+        schema_dict = schema.model_json_schema()
+        properties = schema_dict.get("properties", {})
+        
+        for field_name, field_info in properties.items():
+            field_type = field_info.get("type", "string")
+            
+            # Handle enum
+            if "enum" in field_info:
+                example[field_name] = field_info["enum"][0]
+            # Handle arrays
+            elif field_type == "array":
+                items = field_info.get("items", {})
+                if "$ref" in items:
+                    # Nested object
+                    example[field_name] = [{"字段": "请填写实际内容"}]
+                else:
+                    example[field_name] = ["示例内容1", "示例内容2"]
+            # Handle integers
+            elif field_type == "integer":
+                if "minimum" in field_info and "maximum" in field_info:
+                    example[field_name] = (field_info["minimum"] + field_info["maximum"]) // 2
+                else:
+                    example[field_name] = 1
+            # Handle booleans
+            elif field_type == "boolean":
+                example[field_name] = True
+            # Handle strings
+            else:
+                desc = field_info.get("description", field_name)
+                example[field_name] = f"请填写{desc}"
+        
+        return example
+

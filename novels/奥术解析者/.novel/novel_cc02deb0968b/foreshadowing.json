@@ -40,5 +40,68 @@
     "planted_chapter": 2,
     "resolved_chapter": null,
     "status": "planted"
+  },
+  {
+    "id": "fs_3_3",
+    "description": "林恩成功释放火星，但其魔力输出功率极低，远不足以释放标准火球，如何快速提升魔力或找到替代方案应对三天后考核成为紧迫问题。",
+    "planted_chapter": 3,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_3_3",
+    "description": "林恩对魔法本质的认知与学院正统教育完全相悖，这种“异端”理解一旦暴露可能引发冲突。",
+    "planted_chapter": 3,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_3_3",
+    "description": "系统演算出的“火星术”等简化模型，可能指向一条完全不同于传统魔法体系的新道路。",
+    "planted_chapter": 3,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_4_2",
+    "description": "【全知解析系统】偶尔会弹出林恩暂时无法理解的、远超当前魔法世界认知水平的优化建议，暗示其知识来源和潜力深不可测。",
+    "planted_chapter": 4,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_4_2",
+    "description": "林恩的身体（魔力亲和度F级）与他的设计能力（通过系统优化）之间存在巨大鸿沟，这可能成为未来发展的关键限制或冲突点。",
+    "planted_chapter": 4,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_6_4",
+    "description": "林恩的‘优化火球术’（科学解构魔法）公开亮相，必将引发传统魔法势力（学院高层、贵族）的强烈反弹与后续冲突。",
+    "planted_chapter": 6,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_6_4",
+    "description": "考官将事件上报学院高层，维克多教授等学院高层的态度和后续裁决将成为关键。",
+    "planted_chapter": 6,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_6_4",
+    "description": "林恩的行动受限（不得离开学院），可能意味着他即将面临学院的正式调查或质询。",
+    "planted_chapter": 6,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_6_4",
+    "description": "林恩在平民学徒中点燃了‘希望’，可能在未来吸引追随者或引发平民与贵族学徒间的进一步对立。",
+    "planted_chapter": 6,
+    "resolved_chapter": null,
+    "status": "planted"
   }
 ]
