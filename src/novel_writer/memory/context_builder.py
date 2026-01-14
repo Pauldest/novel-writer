@@ -221,17 +221,42 @@ class ContextBuilder:
             char = self.structured_store.get_character(name)
             if char:
                 state_parts = [f"【{name}】"]
-                state_parts.append(f"状态: {char.status}")
-                if char.location != "unknown":
-                    state_parts.append(f"位置: {char.location}")
+                
+                # 境界/等级（优先显示）
+                if char.power_level:
+                    state_parts.append(f"境界: {char.power_level}")
+                
+                # 技能
+                if char.skills:
+                    skills_str = ", ".join([f"{k}({v})" for k, v in list(char.skills.items())[:5]])
+                    state_parts.append(f"技能: {skills_str}")
+                
+                # 特殊能力
+                if char.abilities:
+                    state_parts.append(f"能力: {', '.join(char.abilities[:5])}")
+                
+                # 装备
+                if char.equipment:
+                    state_parts.append(f"装备: {', '.join(char.equipment[:5])}")
+                
+                # 物品（消耗品）
                 if char.inventory:
-                    state_parts.append(f"物品: {', '.join(char.inventory)}")
+                    state_parts.append(f"物品: {', '.join(char.inventory[:5])}")
+                
+                # 状态和位置
+                status_loc = f"状态: {char.status}"
+                if char.location != "unknown":
+                    status_loc += f" | 位置: {char.location}"
+                state_parts.append(status_loc)
+                
+                # 关系（简略）
                 if char.relationships:
                     rel_strs = [f"{k}({v})" for k, v in list(char.relationships.items())[:3]]
                     state_parts.append(f"关系: {', '.join(rel_strs)}")
-                states.append(" | ".join(state_parts))
+                
+                states.append("\n".join(state_parts))
         
-        return "\n".join(states) if states else ""
+        return "\n\n".join(states) if states else ""
     
     def _format_outline(self, outline: ChapterOutline) -> str:
         """Format chapter outline for the prompt."""

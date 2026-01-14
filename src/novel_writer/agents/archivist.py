@@ -18,6 +18,14 @@ class CharacterUpdate(BaseModel):
     inventory_remove: list[str] = Field(default_factory=list)
     relationship_updates: dict[str, str] = Field(default_factory=dict)
     notes: str = ""
+    
+    # 动态状态更新
+    skill_updates: dict[str, str] = Field(default_factory=dict, description="技能变化，如 {'破风剑法': '大成'}")
+    new_abilities: list[str] = Field(default_factory=list, description="新获得的能力")
+    lost_abilities: list[str] = Field(default_factory=list, description="失去的能力")
+    power_level: Optional[str] = Field(default=None, description="境界/等级变化")
+    equipment_add: list[str] = Field(default_factory=list, description="新装备")
+    equipment_remove: list[str] = Field(default_factory=list, description="失去的装备")
 
 
 class ArchiveResult(BaseModel):
@@ -37,7 +45,7 @@ ARCHIVIST_SYSTEM_PROMPT = """你是一位细心的记忆管理员（Archivist）
 你的职责：
 1. 生成章节摘要
 2. 记录关键事件到时间线
-3. 更新角色状态（位置、持有物品、关系变化）
+3. 更新角色状态（位置、持有物品、关系变化、技能、能力、境界）
 4. 识别和记录伏笔
 5. 提取重要实体（人物、物品、地点）供检索
 
@@ -48,10 +56,14 @@ ARCHIVIST_SYSTEM_PROMPT = """你是一位细心的记忆管理员（Archivist）
 - 实体名称要准确，便于后续检索
 
 特别注意：
-- 如果角色获得或失去物品，必须记录
+- 如果角色获得或失去物品/装备，必须记录到对应字段
 - 如果角色位置发生变化，必须更新
 - 如果角色关系发生变化（如结仇、和好），必须记录
-- 如果有人物死亡或重伤，必须更新状态"""
+- 如果有人物死亡或重伤，必须更新状态
+- 如果角色技能提升（如剑法从入门到小成），必须记录到 skill_updates
+- 如果角色获得新能力（如火焰抗性），必须记录到 new_abilities
+- 如果角色境界/等级变化（如突破到凝气期），必须记录到 power_level
+- 装备（武器、防具）和消耗品（丹药、灵石）要区分开"""
 
 
 class ArchivistAgent(BaseAgent[ArchiveResult]):
@@ -164,6 +176,32 @@ class ArchivistAgent(BaseAgent[ArchiveResult]):
                     updates["relationships"] = new_relationships
                 if update.notes:
                     updates["notes"] = char.notes + f"\n第{chapter.chapter_number}章: {update.notes}"
+                
+                # 处理技能更新
+                if update.skill_updates:
+                    new_skills = dict(char.skills)
+                    new_skills.update(update.skill_updates)
+                    updates["skills"] = new_skills
+                
+                # 处理能力更新
+                if update.new_abilities:
+                    new_abilities = list(char.abilities) + update.new_abilities
+                    updates["abilities"] = new_abilities
+                if update.lost_abilities:
+                    current = updates.get("abilities", list(char.abilities))
+                    updates["abilities"] = [a for a in current if a not in update.lost_abilities]
+                
+                # 处理境界更新
+                if update.power_level:
+                    updates["power_level"] = update.power_level
+                
+                # 处理装备更新
+                if update.equipment_add:
+                    new_equipment = list(char.equipment) + update.equipment_add
+                    updates["equipment"] = new_equipment
+                if update.equipment_remove:
+                    current = updates.get("equipment", list(char.equipment))
+                    updates["equipment"] = [e for e in current if e not in update.equipment_remove]
                 
                 if updates:
                     structured_store.update_character(

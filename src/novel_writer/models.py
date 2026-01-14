@@ -12,10 +12,16 @@ class Character(BaseModel):
     description: str = Field(default="", description="外貌和性格描述")
     status: str = Field(default="alive", description="当前状态: alive/dead/unknown")
     location: str = Field(default="unknown", description="当前位置")
-    inventory: list[str] = Field(default_factory=list, description="持有物品")
+    inventory: list[str] = Field(default_factory=list, description="持有物品（消耗品）")
     relationships: dict[str, str] = Field(default_factory=dict, description="与其他角色的关系")
     notes: str = Field(default="", description="其他备注")
     last_updated_chapter: int = Field(default=0, description="最后更新的章节号")
+    
+    # 动态状态追踪
+    skills: dict[str, str] = Field(default_factory=dict, description="技能名 -> 等级/描述")
+    abilities: list[str] = Field(default_factory=list, description="特殊能力列表")
+    power_level: str = Field(default="", description="修炼境界/等级")
+    equipment: list[str] = Field(default_factory=list, description="装备列表")
 
 
 class ChapterOutline(BaseModel):

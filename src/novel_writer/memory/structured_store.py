@@ -294,11 +294,19 @@ class StructuredStore:
         if self._novel.characters:
             summary_parts.append("\n## 主要角色状态")
             for name, char in list(self._novel.characters.items())[:5]:  # Top 5 characters
-                status_line = f"- {name}: {char.status}"
+                status_line = f"- {name}"
+                if char.power_level:
+                    status_line += f" [{char.power_level}]"
+                status_line += f": {char.status}"
                 if char.location != "unknown":
                     status_line += f", 位于{char.location}"
+                if char.skills:
+                    skills = ", ".join([f"{k}({v})" for k, v in list(char.skills.items())[:3]])
+                    status_line += f", 技能[{skills}]"
+                if char.equipment:
+                    status_line += f", 装备[{', '.join(char.equipment[:3])}]"
                 if char.inventory:
-                    status_line += f", 持有[{', '.join(char.inventory[:3])}]"
+                    status_line += f", 物品[{', '.join(char.inventory[:3])}]"
                 summary_parts.append(status_line)
         
         # Recent timeline events
