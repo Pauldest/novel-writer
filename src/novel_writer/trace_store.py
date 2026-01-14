@@ -210,18 +210,19 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         """
         return self._save_text("writer_draft.md", content, "Writer")
     
-    def save_writer_revision(self, content: str, revision_number: int) -> Path:
+    def save_writer_revision(self, content: str, version: int, review_chance: int) -> Path:
         """
         Save Writer agent revision.
         
         Args:
             content: Revised content
-            revision_number: Revision attempt number
+            version: Writer version number
+            review_chance: Review attempt interaction
             
         Returns:
             Path to saved file
         """
-        return self._save_text(f"writer_rev{revision_number}.md", content, "Writer")
+        return self._save_text(f"writer_v{version}_rev{review_chance}.md", content, "Writer")
     
     def save_writer_final(self, content: str) -> Path:
         """

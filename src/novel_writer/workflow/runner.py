@@ -190,7 +190,7 @@ class ChapterRunner:
             
             state["draft"] = current_content
             
-            # Give this version up to 3 review chances (no revision between them)
+            # Give this version up to 2 review chances (with revision in between)
             last_review = None
             for review_chance in range(1, max_reviews_per_version + 1):
                 self._update_status(f"版本 {version} 审核中 ({review_chance}/{max_reviews_per_version})...")
@@ -214,21 +214,50 @@ class ChapterRunner:
                 
                 console.print(f"  版本 {version} 审核 {review_chance}: 评分 {review_result.score}/100, 状态: {review_result.status}")
                 
-                # Check if passed
+                # Check outcome
                 if review_result.status == "pass":
                     self._update_status(f"版本 {version} 审核通过!")
                     passed = True
                     break
+                elif review_result.status == "rewrite_needed":
+                    console.print("  [red]Reviewer 判定需要重写 (Rewrite Needed)[/red]")
+                    last_review = review_result
+                    break # Break inner loop, will trigger next version (Writer rewrite)
                 
-                # Don't revise, just record for next review chance
-                last_review = review_result
+                # If revision_needed, try to revise if we have chances left
+                if review_result.status == "revision_needed":
+                    if review_chance < max_reviews_per_version:
+                        self._update_status(f"版本 {version} 需要修改 (Revision Needed)，Writer 正在修订...")
+                        
+                        feedback = self.reviewer.format_feedback_for_writer(review_result)
+                        if trace:
+                            trace.start_timer("Writer")
+                        
+                        # Use Writer's revise capability
+                        current_content = self.writer.revise(
+                            original_content=current_content,
+                            review_feedback=feedback,
+                            context=context,
+                            outline=outline,
+                            trace=trace,
+                        )
+                        
+                        if trace:
+                            trace.save_writer_revision(current_content, version, review_chance) # Assuming trace method exists or similar
+                        
+                        state["draft"] = current_content
+                        last_review = review_result
+                        continue # Continue to next review chance with REVISED content
+                    else:
+                        console.print(f"  [yellow]版本 {version} 达到最大修改次数[/yellow]")
+                        last_review = review_result
             
             if passed:
                 break
             
-            # All 3 review chances failed for this version
+            # Version failed
             final_review_result = last_review
-            console.print(f"  [yellow]版本 {version} 三次审核均未通过[/yellow]")
+            console.print(f"  [yellow]版本 {version} 未通过审核[/yellow]")
         
         # If all versions failed (3 versions x 3 reviews each), do final revision
         if not passed and final_review_result:
