@@ -40,5 +40,26 @@
     "planted_chapter": 2,
     "resolved_chapter": null,
     "status": "planted"
+  },
+  {
+    "id": "fs_3_3",
+    "description": "林恩意识到传统魔法体系从根子上就错了，建立在错误认知和迷信之上。这暗示他未来可能与传统魔法势力发生根本性冲突。",
+    "planted_chapter": 3,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_3_3",
+    "description": "林恩重构的法术模型“与传统魔法理论不兼容”，且“表现形式可能存在差异”。这暗示他使用这种力量时可能被他人察觉异常，引发怀疑或调查。",
+    "planted_chapter": 3,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_3_3",
+    "description": "林恩的思维方式转变为“认知维度的碾压”，这为他未来可能系统性地解析、优化甚至颠覆更多魔法奠定了基础。",
+    "planted_chapter": 3,
+    "resolved_chapter": null,
+    "status": "planted"
   }
 ]

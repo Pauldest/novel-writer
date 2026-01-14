@@ -28,6 +28,25 @@ class ReviewResult(BaseModel):
     strengths: list[str] = Field(default_factory=list, description="亮点")
     summary: str = Field(..., description="审核总结")
     revision_instructions: str = Field(default="", description="给 Writer 的修改指令")
+    
+    def model_post_init(self, __context) -> None:
+        """Correct status based on score and issue severity rules."""
+        # Check for critical issues
+        has_critical = any(issue.severity == "critical" for issue in self.issues)
+        has_major = any(issue.severity == "major" for issue in self.issues)
+        
+        # Apply rules:
+        # - pass: score >= 75 AND no critical issues
+        # - rewrite_needed: score < 50 OR has structural issues
+        # - revision_needed: everything else
+        
+        if self.score >= 75 and not has_critical:
+            object.__setattr__(self, 'status', 'pass')
+        elif self.score < 50:
+            object.__setattr__(self, 'status', 'rewrite_needed')
+        else:
+            # Has critical issue or score in 50-74 range
+            object.__setattr__(self, 'status', 'revision_needed')
 
 
 REVIEWER_SYSTEM_PROMPT = """你是一位严谨的小说编辑（Reviewer），负责审核章节内容的质量和一致性。
