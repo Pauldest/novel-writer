@@ -11,7 +11,7 @@ from ..memory.context_builder import ContextPacket
 class ReviewIssue(BaseModel):
     """单个审核问题"""
     category: Literal["plot", "character", "setting", "style", "foreshadowing", "logic", "other"]
-    severity: Literal["minor", "major", "critical"]
+    severity: Literal["minor", "moderate", "major", "critical"]
     description: str
     location: str = Field(default="", description="问题在文中的大致位置")
     suggestion: str = Field(default="", description="修改建议")
@@ -97,7 +97,10 @@ status 判定：
 
 **重要**: issues 中的 category 字段必须使用以下英文值之一：
 "plot", "character", "setting", "style", "foreshadowing", "logic", "other"
-不要使用中文分类名！"""
+不要使用中文分类名！
+
+**重要**: issues 中的 severity 字段必须使用以下英文值之一：
+"minor"（小问题）, "moderate"（中等问题）, "major"（严重问题）, "critical"（致命问题）"""
 
 
 class ReviewerAgent(BaseAgent[ReviewResult]):
