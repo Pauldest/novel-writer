@@ -175,16 +175,21 @@ class WriterAgent(BaseAgent[None]):
             trace.save_writer_revise_context(
                 revision_number=1, # Default or passed locally? The original code didn't have revision_number arg in the caller args, but revision_number=1 in save call. Let's keep 1 or see if we can get it. Method doesn't have it.
                 full_prompt=prompt + self.get_format_instruction(),
-                system_prompt=self.system_prompt
+                system_prompt=WRITER_REVISION_SYSTEM_PROMPT
             )
         
-        return self._generate_with_continuation(prompt)
+        return self._generate_with_continuation(prompt, system_prompt=WRITER_REVISION_SYSTEM_PROMPT)
 
-    def _generate_with_continuation(self, prompt: str, max_continuations: int = 3) -> str:
+    def _generate_with_continuation(self, prompt: str, max_continuations: int = 3, system_prompt: Optional[str] = None) -> str:
         """
         Generate content logic with automatic continuation if truncated.
         """
-        full_content = str(self.invoke(prompt))
+        # Pass system_prompt if provided, otherwise BaseAgent uses default
+        kwargs = {}
+        if system_prompt:
+            kwargs["system_prompt"] = system_prompt
+            
+        full_content = str(self.invoke(prompt, **kwargs))
         
         # Check if content seems truncated (doesn't end with proper punctuation)
         # Check for standard terminal punctuation: ., !, ?, ", ”
@@ -231,7 +236,7 @@ class WriterAgent(BaseAgent[None]):
                 "Do not repeat the last sentence, just continue."
             )
             
-            chunk = str(self.invoke(new_prompt))
+            chunk = str(self.invoke(new_prompt, **kwargs))
             full_content += chunk
             
         return full_content

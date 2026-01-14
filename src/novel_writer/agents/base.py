@@ -67,9 +67,12 @@ class BaseAgent(ABC, Generic[T]):
         Returns:
             Structured response (if schema provided) or string
         """
+        # Determine system prompt
+        system_prompt = kwargs.get("system_prompt", self.system_prompt)
+        
         # Build messages
         messages = [
-            SystemMessage(content=self.system_prompt),
+            SystemMessage(content=system_prompt),
             HumanMessage(content=user_input),
         ]
         
