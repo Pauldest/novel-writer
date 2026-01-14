@@ -120,8 +120,6 @@ class DirectorAgent(BaseAgent[DirectorOutput]):
         
         if target_word_count < 2000:
             context_parts.append("建议: 字数较少，请聚焦于1-2个核心场景，避免过于复杂的支线。")
-        elif target_word_count > 5000:
-            context_parts.append("建议: 字数充裕，请安排丰富的剧情转折或深入的场景细节，确保内容饱满。")
         else:
             context_parts.append("建议: 请安排适量的剧情，保持正常的叙事节奏。")
         
