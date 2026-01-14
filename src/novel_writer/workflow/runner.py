@@ -152,105 +152,97 @@ class ChapterRunner:
         if trace:
             trace.save_context(context)
         
-        # Step 4: Writer generates content
-        self._update_status("Writer 正在撰写正文...")
-        if trace:
-            trace.start_timer("Writer")
-        draft = self.writer.run(
-            outline=outline,
-            context=context,
-            target_word_count=settings.default_chapter_length,
-            trace=trace,
-        )
-        state["draft"] = draft
-        if trace:
-            trace.save_writer_draft(draft)
+        # Step 4 & 5: Two-tier version/review loop
+        # Outer loop: Writer versions (max 3)
+        # Inner loop: Review chances per version (max 3, no revision between reviews)
+        max_versions = 3
+        max_reviews_per_version = 3
         
-        # Step 5: Review loop (Strict 3 attempts)
-        current_content = draft
-        review_attempt = 1
-        last_review_result = None
+        current_content = None
+        final_review_result = None
+        passed = False
         
-        while review_attempt <= max_review_attempts:
-            self._update_status(f"Reviewer 正在审核... (次数 {review_attempt}/{max_review_attempts})")
+        for version in range(1, max_versions + 1):
+            # Generate content for this version
+            if version == 1:
+                self._update_status("Writer 正在撰写正文...")
+            else:
+                self._update_status(f"Writer 正在重写第 {version} 版...")
             
             if trace:
-                trace.start_timer("Reviewer")
+                trace.start_timer("Writer")
             
-            # Review
-            review_result = self.reviewer.run(
-                content=current_content,
+            current_content = self.writer.run(
                 outline=outline,
                 context=context,
-                previous_review=last_review_result,
-                attempt=review_attempt,
+                target_word_count=settings.default_chapter_length,
                 trace=trace,
             )
-            state["review_result"] = review_result
             
             if trace:
-                trace.save_review(review_result, review_attempt)
+                trace.save_writer_version(current_content, version)
             
-            console.print(f"  审核评分: {review_result.score}/100, 状态: {review_result.status}")
+            state["draft"] = current_content
             
-            # Check Pass
-            if review_result.status == "pass":
-                self._update_status("审核通过!")
+            # Give this version up to 3 review chances (no revision between them)
+            last_review = None
+            for review_chance in range(1, max_reviews_per_version + 1):
+                self._update_status(f"版本 {version} 审核中 ({review_chance}/{max_reviews_per_version})...")
+                
+                if trace:
+                    trace.start_timer("Reviewer")
+                
+                review_result = self.reviewer.run(
+                    content=current_content,
+                    outline=outline,
+                    context=context,
+                    previous_review=last_review,
+                    attempt=review_chance,
+                    trace=trace,
+                )
+                state["review_result"] = review_result
+                
+                if trace:
+                    trace.save_review_with_version(review_result, version, review_chance)
+                
+                console.print(f"  版本 {version} 审核 {review_chance}: 评分 {review_result.score}/100, 状态: {review_result.status}")
+                
+                # Check if passed
+                if review_result.status == "pass":
+                    self._update_status(f"版本 {version} 审核通过!")
+                    passed = True
+                    break
+                
+                # Don't revise, just record for next review chance
+                last_review = review_result
+            
+            if passed:
                 break
             
-            # If not passed, check if we have retries left
-            if review_attempt < max_review_attempts:
-                if review_result.status == "rewrite_needed":
-                    self._update_status("需要重写，重新生成...")
-                    if trace:
-                        trace.start_timer("Writer")
-                    # Rewrite (Run fresh writer)
-                    current_content = self.writer.run(
-                        outline=outline,
-                        context=context,
-                        target_word_count=settings.default_chapter_length,
-                        trace=trace,
-                    )
-                    # Note: We save as revision even if it's a rewrite, to keep numerical order
-                    if trace:
-                        trace.save_writer_revision(current_content, review_attempt)
-                else:
-                    # Revision needed
-                    self._update_status("正在根据反馈修改...")
-                    feedback = self.reviewer.format_feedback_for_writer(review_result)
-                    if trace:
-                        trace.start_timer("Writer")
-                    
-                    current_content = self.writer.revise(
-                        original_content=current_content,
-                        review_feedback=feedback,
-                        context=context,
-                        outline=outline,
-                        trace=trace,
-                    )
-                    if trace:
-                        trace.save_writer_revision(current_content, review_attempt)
-            else:
-                self._update_status("已达到最大审核次数，尝试进行最后一次尽力修改...")
-                # Final Best Effort Revision
-                if review_result.status != "pass":
-                     feedback = self.reviewer.format_feedback_for_writer(review_result)
-                     if trace:
-                        trace.start_timer("Writer")
-                     current_content = self.writer.revise(
-                        original_content=current_content,
-                        review_feedback=feedback,
-                        context=context,
-                        outline=outline,
-                        trace=trace,
-                    )
-                     if trace:
-                        trace.save_writer_revision(current_content, review_attempt) # Save as final attempt revision
+            # All 3 review chances failed for this version
+            final_review_result = last_review
+            console.print(f"  [yellow]版本 {version} 三次审核均未通过[/yellow]")
+        
+        # If all versions failed (3 versions x 3 reviews each), do final revision
+        if not passed and final_review_result:
+            self._update_status("所有版本审核失败，进行最后一次尽力修订...")
+            feedback = self.reviewer.format_feedback_for_writer(final_review_result)
             
-            # Prepare for next loop
-            last_review_result = review_result
-            review_attempt += 1
-            state["retry_count"] = review_attempt - 1 # 0-indexed for state if needed
+            if trace:
+                trace.start_timer("Writer")
+            
+            current_content = self.writer.revise(
+                original_content=current_content,
+                review_feedback=feedback,
+                context=context,
+                outline=outline,
+                trace=trace,
+            )
+            
+            if trace:
+                trace.save_writer_final_revision(current_content)
+            
+            console.print("  [dim]已完成最终修订，强制接受[/dim]")
         
         # Save final writer output
         if trace:

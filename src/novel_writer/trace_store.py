@@ -307,6 +307,48 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         
         return self._save_json(f"writer_revise_context_{revision_number}.json", data, "Writer")
     
+    def save_writer_version(self, content: str, version: int) -> Path:
+        """
+        Save Writer agent version output.
+        
+        Args:
+            content: Version content
+            version: Version number (1, 2, or 3)
+            
+        Returns:
+            Path to saved file
+        """
+        return self._save_text(f"writer_v{version}.md", content, "Writer")
+    
+    def save_review_with_version(self, result: Any, version: int, review_chance: int) -> Path:
+        """
+        Save Reviewer agent output with version info.
+        
+        Args:
+            result: ReviewResult instance
+            version: Writer version number
+            review_chance: Review attempt within this version
+            
+        Returns:
+            Path to saved file
+        """
+        data = self._pydantic_to_dict(result)
+        data["_version"] = version
+        data["_review_chance"] = review_chance
+        return self._save_json(f"reviewer_v{version}_r{review_chance}.json", data, "Reviewer")
+    
+    def save_writer_final_revision(self, content: str) -> Path:
+        """
+        Save Writer agent final revision (after all versions failed).
+        
+        Args:
+            content: Final revised content
+            
+        Returns:
+            Path to saved file
+        """
+        return self._save_text("writer_final_revision.md", content, "Writer")
+    
     def get_trace_summary(self) -> dict:
         """
         Get a summary of all trace files.
