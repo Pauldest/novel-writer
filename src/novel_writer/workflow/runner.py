@@ -116,6 +116,7 @@ class ChapterRunner:
         self._update_status("Director 正在规划章节...")
         if trace:
             trace.start_timer("Director")
+            trace.save_director_context(novel, chapter_number, chapter_goal)
         director_output = self.director.run(
             novel=novel,
             next_chapter_number=chapter_number,
@@ -126,9 +127,10 @@ class ChapterRunner:
         
         # Step 2: Plotter generates detailed outline
         self._update_status("Plotter 正在生成大纲...")
+        previous_chapter = novel.get_latest_chapter()
         if trace:
             trace.start_timer("Plotter")
-        previous_chapter = novel.get_latest_chapter()
+            trace.save_plotter_context(director_output, novel, previous_chapter.summary if previous_chapter else None)
         plotter_output, outline = self.plotter.run(
             director_output=director_output,
             novel=novel,
@@ -154,6 +156,11 @@ class ChapterRunner:
         self._update_status("Writer 正在撰写正文...")
         if trace:
             trace.start_timer("Writer")
+            trace.save_writer_start_context(
+                outline=outline,
+                context=context,
+                target_word_count=settings.default_chapter_length
+            )
         draft = self.writer.run(
             outline=outline,
             context=context,
@@ -175,6 +182,13 @@ class ChapterRunner:
             
             if trace:
                 trace.start_timer("Reviewer")
+                trace.save_reviewer_context(
+                    content=current_content,
+                    outline=outline,
+                    context=context,
+                    previous_review=last_review_result,
+                    attempt=review_attempt
+                )
             review_result = self.reviewer.run(
                 content=current_content,
                 outline=outline,
@@ -195,6 +209,11 @@ class ChapterRunner:
                 self._update_status("需要重写，重新生成...")
                 if trace:
                     trace.start_timer("Writer")
+                    trace.save_writer_start_context(
+                        outline=outline,
+                        context=context,
+                        target_word_count=settings.default_chapter_length
+                    )
                 current_content = self.writer.run(
                     outline=outline,
                     context=context,
@@ -249,6 +268,7 @@ class ChapterRunner:
         self._update_status("Archivist 正在归档...")
         if trace:
             trace.start_timer("Archivist")
+            trace.save_archivist_context(chapter)
         archive_result = self.archivist.run(
             chapter=chapter,
             vector_store=self.vector_store,

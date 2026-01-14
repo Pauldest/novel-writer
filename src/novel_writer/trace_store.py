@@ -107,6 +107,18 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
             return delta.total_seconds() * 1000
         return None
     
+    def save_director_context(self, novel: Any, next_chapter_number: int, user_goal: str) -> Path:
+        """
+        Save Director agent input context.
+        """
+        data = {
+            "novel_title": getattr(novel, "title", "Unknown"),
+            "next_chapter_number": next_chapter_number,
+            "user_goal": user_goal,
+            "novel_summary": getattr(novel, "synopsis", ""),
+        }
+        return self._save_json("director_context.json", data, "Director")
+
     def save_director(self, output: Any) -> Path:
         """
         Save Director agent output.
@@ -120,6 +132,22 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         data = self._pydantic_to_dict(output)
         return self._save_json("director.json", data, "Director")
     
+    def save_plotter_context(
+        self, 
+        director_output: Any, 
+        novel: Any, 
+        previous_chapter_summary: Optional[str]
+    ) -> Path:
+        """
+        Save Plotter agent input context.
+        """
+        data = {
+            "director_output": self._pydantic_to_dict(director_output),
+            "novel_title": getattr(novel, "title", "Unknown"),
+            "previous_chapter_summary": previous_chapter_summary,
+        }
+        return self._save_json("plotter_context.json", data, "Plotter")
+
     def save_plotter(self, plotter_output: Any, outline: Any) -> Path:
         """
         Save Plotter agent output.
@@ -162,6 +190,33 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         
         return self._save_json("context.json", data, "ContextBuilder")
     
+    def save_writer_start_context(
+        self,
+        outline: Any,
+        context: Any,
+        target_word_count: int
+    ) -> Path:
+        """
+        Save Writer agent input context (initial run).
+        """
+        # Build context data
+        context_data = {}
+        if hasattr(context, "__dict__"):
+            context_data = {
+                "world_setting": context.world_setting,
+                "style_guide": context.style_guide,
+                "previous_chapter_ending": context.previous_chapter_ending,
+                "character_states": context.character_states,
+                "relevant_memories": context.relevant_memories,
+            }
+
+        data = {
+            "outline": self._pydantic_to_dict(outline),
+            "context": context_data,
+            "target_word_count": target_word_count,
+        }
+        return self._save_json("writer_start_context.json", data, "Writer")
+
     def save_writer_draft(self, content: str) -> Path:
         """
         Save Writer agent initial draft.
@@ -199,6 +254,35 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         """
         return self._save_text("writer_final.md", content, "Writer")
     
+    def save_reviewer_context(
+        self,
+        content: str,
+        outline: Any,
+        context: Any,
+        previous_review: Any = None,
+        attempt: int = 1
+    ) -> Path:
+        """
+        Save Reviewer agent input context.
+        """
+        context_data = {}
+        if hasattr(context, "__dict__"):
+            context_data = {
+                "world_setting": context.world_setting,
+                "style_guide": context.style_guide,
+                "character_states": context.character_states,
+            }
+            
+        data = {
+            "content_preview": content[:1000] + "..." if len(content) > 1000 else content,
+            "content_length": len(content),
+            "outline": self._pydantic_to_dict(outline),
+            "context": context_data,
+            "previous_review": self._pydantic_to_dict(previous_review) if previous_review else None,
+            "attempt": attempt,
+        }
+        return self._save_json(f"reviewer_context_{attempt}.json", data, "Reviewer")
+
     def save_review(self, result: Any, attempt: int) -> Path:
         """
         Save Reviewer agent output.
@@ -213,6 +297,17 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         data = self._pydantic_to_dict(result)
         return self._save_json(f"reviewer_{attempt}.json", data, "Reviewer")
     
+    def save_archivist_context(self, chapter: Any) -> Path:
+        """
+        Save Archivist agent input context.
+        """
+        data = {
+            "chapter_number": getattr(chapter, "chapter_number", 0),
+            "title": getattr(chapter, "title", ""),
+            "content_length": getattr(chapter, "word_count", 0),
+        }
+        return self._save_json("archivist_context.json", data, "Archivist")
+
     def save_archivist(self, result: Any) -> Path:
         """
         Save Archivist agent output.
