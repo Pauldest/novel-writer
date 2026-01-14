@@ -70,6 +70,28 @@ def init(
     ))
 
 
+@app.command("write-c")
+def write_chapter(
+    chapter: int = typer.Argument(..., help="章节号"),
+    max_retries: int = typer.Option(
+        3, "--retries", "-r",
+        help="最大修改次数"
+    ),
+    path: Path = typer.Option(
+        Path("."), "--path", "-p",
+        help="项目目录路径"
+    ),
+):
+    """
+    生成指定章节。
+    
+    Usage:
+        novel-writer write-c 5        # 写第5章
+        novel-writer write-c 10       # 写第10章
+    """
+    _write_single_chapter(chapter=chapter, max_retries=max_retries, path=path)
+
+
 @app.command()
 def write(
     chapter: Optional[int] = typer.Option(
@@ -95,6 +117,11 @@ def write(
         novel-writer write           # 自动写下一章
         novel-writer write -c 5      # 写第5章
     """
+    _write_single_chapter(chapter=chapter, max_retries=max_retries, path=path)
+
+
+def _write_single_chapter(chapter: Optional[int], max_retries: int, path: Path):
+    """Internal function for writing a single chapter."""
     # Find project
     project = find_novel_project(path)
     if not project:
