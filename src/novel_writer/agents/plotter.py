@@ -70,7 +70,7 @@ class PlotterAgent(BaseAgent[PlotterOutput]):
         director_output: DirectorOutput,
         novel: Novel,
         previous_chapter_summary: Optional[str] = None,
-    ) -> ChapterOutline:
+    ) -> tuple[PlotterOutput, "ChapterOutline"]:
         """
         Generate detailed chapter outline from director's instructions.
         
@@ -80,7 +80,9 @@ class PlotterAgent(BaseAgent[PlotterOutput]):
             previous_chapter_summary: Summary of previous chapter
             
         Returns:
-            ChapterOutline ready for Writer agent
+            Tuple of (PlotterOutput, ChapterOutline):
+            - PlotterOutput: Raw LLM output with all Plotter-specific fields (for tracing)
+            - ChapterOutline: Processed outline ready for Writer agent
         """
         # Build context
         context_parts = []
@@ -121,7 +123,7 @@ class PlotterAgent(BaseAgent[PlotterOutput]):
         plotter_output: PlotterOutput = self.invoke(prompt)
         
         # Convert to ChapterOutline
-        return ChapterOutline(
+        chapter_outline = ChapterOutline(
             chapter_number=director_output.chapter_number,
             title=plotter_output.title,
             goal=director_output.chapter_goal,
@@ -130,3 +132,5 @@ class PlotterAgent(BaseAgent[PlotterOutput]):
             characters_involved=director_output.characters_involved,
             foreshadowing=director_output.foreshadowing_to_plant,
         )
+        
+        return plotter_output, chapter_outline

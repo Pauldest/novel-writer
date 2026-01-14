@@ -129,15 +129,14 @@ class ChapterRunner:
         if trace:
             trace.start_timer("Plotter")
         previous_chapter = novel.get_latest_chapter()
-        outline = self.plotter.run(
+        plotter_output, outline = self.plotter.run(
             director_output=director_output,
             novel=novel,
             previous_chapter_summary=previous_chapter.summary if previous_chapter else None,
         )
         state["outline"] = outline
         if trace:
-            # Get plotter_output from plotter if available
-            trace.save_plotter(director_output, outline)
+            trace.save_plotter(plotter_output, outline)
         
         # Step 3: Build context
         self._update_status("Context Builder 正在组装上下文...")
