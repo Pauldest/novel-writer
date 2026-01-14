@@ -108,7 +108,9 @@ status 判定：
 不要使用中文分类名！
 
 **重要**: issues 中的 severity 字段必须使用以下英文值之一：
-"minor"（小问题）, "moderate"（中等问题）, "major"（严重问题）, "critical"（致命问题）"""
+"minor"（小问题）, "moderate"（中等问题）, "major"（严重问题）, "critical"（致命问题）
+
+**重要**: 输出必须是合法的JSON格式。请务必使用标准双引号 (") 包裹所有键和字符串值，严禁使用中文引号 (“” 或 ‘’) 或其他非标准符号。"""
 
 
 class ReviewerAgent(BaseAgent[ReviewResult]):

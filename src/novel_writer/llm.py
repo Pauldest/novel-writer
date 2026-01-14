@@ -101,7 +101,8 @@ class DeepSeekStructuredLLM:
 注意：
 1. 只返回一个JSON对象
 2. 所有字段都必须填写实际内容
-3. 不要返回schema定义，要返回填充了实际数据的JSON"""
+3. 不要返回schema定义，要返回填充了实际数据的JSON
+4. 必须使用标准双引号 (")，严禁使用中文引号 (“” 或 ‘’) 作为JSON及其内容的定界符"""
 
     def invoke(self, messages: list) -> T:
         """Invoke LLM and parse structured response."""
@@ -123,11 +124,26 @@ class DeepSeekStructuredLLM:
         
         # Parse and validate
         try:
-            data = json.loads(json_str)
+            # First attempt: strict=False to allow control chars (newlines)
+            data = json.loads(json_str, strict=False)
             return self.response_schema.model_validate(data)
         except (json.JSONDecodeError, Exception) as e:
-            # If parsing fails, try to be more aggressive about extraction
-            raise ValueError(f"Failed to parse LLM response as JSON: {e}\nResponse: {content}")
+            # If parsing fails, try to sanitize quotes
+            try:
+                sanitized_str = self._sanitize_json(json_str)
+                data = json.loads(sanitized_str, strict=False)
+                return self.response_schema.model_validate(data)
+            except Exception as e2:
+                 # If sanitization fails, raise original error with context
+                raise ValueError(f"Failed to parse LLM response as JSON: {e}\nSanitization failed: {e2}\nResponse: {content}")
+
+    def _sanitize_json(self, text: str) -> str:
+        """Sanitize JSON string by fixing smart quotes."""
+        # 1. Replace start quotes: preceded by : [ , {
+        text = re.sub(r'(?<=[:\[,{])\s*“', ' "', text)
+        # 2. Replace end quotes: followed by , ] } :
+        text = re.sub(r'”\s*(?=[,\]}:])', '"', text)
+        return text
     
     def _extract_json(self, text: str) -> str:
         """Extract JSON from text, handling markdown code blocks."""
