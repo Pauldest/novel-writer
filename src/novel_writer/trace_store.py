@@ -152,7 +152,7 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
             data = {
                 "world_setting": context.world_setting,
                 "previous_chapter_summary": context.previous_chapter_summary,
-                "previous_chapter_ending": context.previous_chapter_ending[:500] + "..." if len(context.previous_chapter_ending) > 500 else context.previous_chapter_ending,
+                "previous_chapter_ending": context.previous_chapter_ending,
                 "relevant_memories": context.relevant_memories,
                 "character_states": context.character_states,
                 "chapter_outline": context.chapter_outline,
