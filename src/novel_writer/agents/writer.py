@@ -84,10 +84,8 @@ class WriterAgent(BaseAgent[None]):
         
         prompt = "\n".join(prompt_parts)
         
-        # Generate content
-        content = self.invoke(prompt)
-        
-        return content
+        # Generate content with continuation support
+        return self._generate_with_continuation(prompt)
     
     def revise(
         self,
@@ -153,4 +151,60 @@ class WriterAgent(BaseAgent[None]):
         
         prompt = "\n".join(prompt_parts)
         
-        return self.invoke(prompt)
+        return self._generate_with_continuation(prompt)
+
+    def _generate_with_continuation(self, prompt: str, max_continuations: int = 3) -> str:
+        """
+        Generate content logic with automatic continuation if truncated.
+        """
+        full_content = str(self.invoke(prompt))
+        
+        # Check if content seems truncated (doesn't end with proper punctuation)
+        # Check for standard terminal punctuation: ., !, ?, ", ”
+        # Also check for markdown code block closure if applicable (though writer output is plain text usually)
+        terminal_punctuation = ('.', '!', '?', '"', '”', '…', 'waiting', '—') # Added em-dash and ellipsis
+        
+        for _ in range(max_continuations):
+            stripped_content = full_content.strip()
+            if not stripped_content:
+                 break
+                 
+            # If it ends with terminal punctuation, we're likely done
+            if stripped_content.endswith(terminal_punctuation):
+                break
+                
+            # If prompt indicates it's finished but just missing punctuation, maybe risky, 
+            # but usually LLM truncation happens mid-sentence.
+            
+            # Request continuation
+            continuation_prompt = (
+                f"{prompt}\n\n"
+                f"Previous output:\n{full_content}\n\n"
+                "SYSTEM: The output seems truncated. Please continue exactly from where you left off."
+            )
+            
+            # Note: A better way might offer just the last chunk as context to save tokens, 
+            # but for consistency sending full context is safer if tokens permit. 
+            # However, if we are hitting limits, adding more context might be bad.
+            # Let's try a simpler continuation trigger if the model supports history, 
+            # but here we are stateless per invoke.
+            # Let's try appending a specific instruction with just the tail of the content.
+            
+            continuation_instruction = "Continue immediately from the last sentence."
+            
+            # Simple append approach for now
+             # We can't really "append" to the previous conversation easily with the current BaseAgent.invoke 
+            # which takes a single string and wraps it in System+Human.
+            # So we have to formulate a new prompt that says "Here is what you wrote so far, please finish it."
+            
+            new_prompt = (
+                "You are continuing a story generation. Here is the last part of the text you generated:\n\n"
+                f"...{full_content[-2000:]}\n\n" # Provide last 2000 chars context
+                "The text was cut off. Please continue writing exactly from where it stopped.\n"
+                "Do not repeat the last sentence, just continue."
+            )
+            
+            chunk = str(self.invoke(new_prompt))
+            full_content += chunk
+            
+        return full_content
