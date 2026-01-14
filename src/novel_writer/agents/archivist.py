@@ -16,11 +16,11 @@ class CharacterUpdate(BaseModel):
     location: Optional[str] = None
     inventory_add: list[str] = Field(default_factory=list)
     inventory_remove: list[str] = Field(default_factory=list)
-    relationship_updates: dict[str, str] = Field(default_factory=dict)
+    relationship_updates: list[str] = Field(default_factory=list, description="关系变化列表，格式 '角色名: 关系描述'")
     notes: str = ""
     
     # 动态状态更新
-    skill_updates: dict[str, str] = Field(default_factory=dict, description="技能变化，如 {'破风剑法': '大成'}")
+    skill_updates: list[str] = Field(default_factory=dict, description="技能变化列表，格式 '技能名: 描述/等级'")
     new_abilities: list[str] = Field(default_factory=list, description="新获得的能力")
     lost_abilities: list[str] = Field(default_factory=list, description="失去的能力")
     power_level: Optional[str] = Field(default=None, description="境界/等级变化")
@@ -58,9 +58,9 @@ ARCHIVIST_SYSTEM_PROMPT = """你是一位细心的记忆管理员（Archivist）
 特别注意：
 - 如果角色获得或失去物品/装备，必须记录到对应字段
 - 如果角色位置发生变化，必须更新
-- 如果角色关系发生变化（如结仇、和好），必须记录
+- 如果角色关系发生变化（如结仇、和好），以 '角色名: 新关系' 的格式记录到 relationship_updates
 - 如果有人物死亡或重伤，必须更新状态
-- 如果角色技能提升（如剑法从入门到小成），必须记录到 skill_updates
+- 如果角色技能提升（如剑法从入门到小成），以 '技能名: 新等级/描述' 的格式记录到 skill_updates
 - 如果角色获得新能力（如火焰抗性），必须记录到 new_abilities
 - 如果角色境界/等级变化（如突破到凝气期），必须记录到 power_level
 - 装备（武器、防具）和消耗品（丹药、灵石）要区分开"""
@@ -170,17 +170,32 @@ class ArchivistAgent(BaseAgent[ArchiveResult]):
                     updates["inventory"] = new_inventory
                 if update.inventory_remove:
                     updates["inventory"] = [i for i in char.inventory if i not in update.inventory_remove]
+                
+                # Parse relationship updates
                 if update.relationship_updates:
                     new_relationships = dict(char.relationships)
-                    new_relationships.update(update.relationship_updates)
+                    for rel_str in update.relationship_updates:
+                        if ":" in rel_str:
+                            target, status = rel_str.split(":", 1)
+                            new_relationships[target.strip()] = status.strip()
+                        else:
+                            # Fallback if format is wrong, just log it as a generic note or key
+                            new_relationships[rel_str] = "updated"
                     updates["relationships"] = new_relationships
+
                 if update.notes:
                     updates["notes"] = char.notes + f"\n第{chapter.chapter_number}章: {update.notes}"
                 
-                # 处理技能更新
+                # Parse skill updates
                 if update.skill_updates:
                     new_skills = dict(char.skills)
-                    new_skills.update(update.skill_updates)
+                    for skill_str in update.skill_updates:
+                        if ":" in skill_str:
+                            skill_name, skill_desc = skill_str.split(":", 1)
+                            new_skills[skill_name.strip()] = skill_desc.strip()
+                        else:
+                            # Fallback: Treat as new skill with description "acquired" or update existing
+                            new_skills[skill_str.strip()] = "acquired/updated"
                     updates["skills"] = new_skills
                 
                 # 处理能力更新
