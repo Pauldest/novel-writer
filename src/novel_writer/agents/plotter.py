@@ -125,7 +125,10 @@ class PlotterAgent(BaseAgent[PlotterOutput]):
         prompt = "\n".join(context_parts)
         
         if trace:
-            trace.save_plotter_context(full_prompt=prompt)
+            trace.save_plotter_context(
+                full_prompt=prompt,
+                system_prompt=self.system_prompt
+            )
             
         plotter_output: PlotterOutput = self.invoke(prompt)
         

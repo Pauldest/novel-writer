@@ -201,6 +201,7 @@ class ReviewerAgent(BaseAgent[ReviewResult]):
         if trace:
             trace.save_reviewer_context(
                 full_prompt=prompt,
+                system_prompt=self.system_prompt,
                 attempt=attempt
             )
         

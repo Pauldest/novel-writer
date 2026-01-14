@@ -119,6 +119,9 @@ class DirectorAgent(BaseAgent[DirectorOutput]):
         prompt = "\n".join(context_parts)
         
         if trace:
-            trace.save_director_context(full_prompt=prompt)
+            trace.save_director_context(
+                full_prompt=prompt,
+                system_prompt=self.system_prompt
+            )
             
         return self.invoke(prompt)

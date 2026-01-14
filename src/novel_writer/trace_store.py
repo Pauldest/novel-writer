@@ -107,11 +107,12 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
             return delta.total_seconds() * 1000
         return None
     
-    def save_director_context(self, full_prompt: str) -> Path:
+    def save_director_context(self, full_prompt: str, system_prompt: str) -> Path:
         """
         Save Director agent input context.
         """
         data = {
+            "system_prompt": system_prompt,
             "full_prompt": full_prompt,
         }
         return self._save_json("director_context.json", data, "Director")
@@ -129,11 +130,12 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         data = self._pydantic_to_dict(output)
         return self._save_json("director.json", data, "Director")
     
-    def save_plotter_context(self, full_prompt: str) -> Path:
+    def save_plotter_context(self, full_prompt: str, system_prompt: str) -> Path:
         """
         Save Plotter agent input context.
         """
         data = {
+            "system_prompt": system_prompt,
             "full_prompt": full_prompt,
         }
         return self._save_json("plotter_context.json", data, "Plotter")
@@ -183,13 +185,15 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
     def save_writer_start_context(
         self,
         target_word_count: int,
-        full_prompt: str
+        full_prompt: str,
+        system_prompt: str
     ) -> Path:
         """
         Save Writer agent input context (initial run).
         """
         data = {
             "target_word_count": target_word_count,
+            "system_prompt": system_prompt,
             "full_prompt": full_prompt,
         }
         return self._save_json("writer_start_context.json", data, "Writer")
@@ -234,6 +238,7 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
     def save_reviewer_context(
         self,
         full_prompt: str,
+        system_prompt: str,
         attempt: int = 1
     ) -> Path:
         """
@@ -241,6 +246,7 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         """
         data = {
             "attempt": attempt,
+            "system_prompt": system_prompt,
             "full_prompt": full_prompt,
         }
         return self._save_json(f"reviewer_context_{attempt}.json", data, "Reviewer")
@@ -259,11 +265,12 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         data = self._pydantic_to_dict(result)
         return self._save_json(f"reviewer_{attempt}.json", data, "Reviewer")
     
-    def save_archivist_context(self, full_prompt: str) -> Path:
+    def save_archivist_context(self, full_prompt: str, system_prompt: str) -> Path:
         """
         Save Archivist agent input context.
         """
         data = {
+            "system_prompt": system_prompt,
             "full_prompt": full_prompt,
         }
         return self._save_json("archivist_context.json", data, "Archivist")
@@ -285,6 +292,7 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         self,
         revision_number: int,
         full_prompt: str,
+        system_prompt: str,
     ) -> Path:
         """
         Save Writer agent revision context for debugging.
@@ -293,6 +301,7 @@ Duration: {self._get_duration(agent_name) or 'N/A'}ms
         """
         data = {
             "revision_number": revision_number,
+            "system_prompt": system_prompt,
             "full_prompt": full_prompt,
         }
         

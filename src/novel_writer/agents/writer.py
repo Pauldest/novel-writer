@@ -95,7 +95,8 @@ class WriterAgent(BaseAgent[None]):
         if trace:
             trace.save_writer_start_context(
                 target_word_count=target_word_count,
-                full_prompt=prompt
+                full_prompt=prompt,
+                system_prompt=self.system_prompt
             )
             
         # Generate content with continuation support
@@ -173,7 +174,8 @@ class WriterAgent(BaseAgent[None]):
         if trace:
             trace.save_writer_revise_context(
                 revision_number=1, # Default or passed locally? The original code didn't have revision_number arg in the caller args, but revision_number=1 in save call. Let's keep 1 or see if we can get it. Method doesn't have it.
-                full_prompt=prompt
+                full_prompt=prompt,
+                system_prompt=self.system_prompt
             )
         
         return self._generate_with_continuation(prompt)
