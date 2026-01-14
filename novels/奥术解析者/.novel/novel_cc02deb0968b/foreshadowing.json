@@ -77,30 +77,30 @@
     "status": "planted"
   },
   {
-    "id": "fs_6_4",
-    "description": "林恩的‘优化火球术’（科学解构魔法）公开亮相，必将引发传统魔法势力（学院高层、贵族）的强烈反弹与后续冲突。",
-    "planted_chapter": 6,
+    "id": "fs_5_4",
+    "description": "[fs_5_1] 诺亚对林恩的‘歪门邪道’抱有好奇心，决定考核后找林恩谈谈，可能成为林恩理论的首个潜在理解者或盟友。",
+    "planted_chapter": 5,
     "resolved_chapter": null,
     "status": "planted"
   },
   {
-    "id": "fs_6_4",
-    "description": "考官将事件上报学院高层，维克多教授等学院高层的态度和后续裁决将成为关键。",
-    "planted_chapter": 6,
+    "id": "fs_5_4",
+    "description": "[fs_5_2] 莉娅暗下决心，若林恩被送往矿场将提供帮助，暗示林恩即使考核失败也可能获得来自平民阶层的有限支援。",
+    "planted_chapter": 5,
     "resolved_chapter": null,
     "status": "planted"
   },
   {
-    "id": "fs_6_4",
-    "description": "林恩的行动受限（不得离开学院），可能意味着他即将面临学院的正式调查或质询。",
-    "planted_chapter": 6,
+    "id": "fs_5_4",
+    "description": "[fs_5_3] 艾德蒙对‘形式规范性’的极端强调，揭示了学院教学体系与林恩‘科学魔法’理念的根本冲突。",
+    "planted_chapter": 5,
     "resolved_chapter": null,
     "status": "planted"
   },
   {
-    "id": "fs_6_4",
-    "description": "林恩在平民学徒中点燃了‘希望’，可能在未来吸引追随者或引发平民与贵族学徒间的进一步对立。",
-    "planted_chapter": 6,
+    "id": "fs_5_4",
+    "description": "[fs_5_4] 林恩的‘高压穿甲射流’法术即将展示，其颠覆性的施法方式和远超传统魔法的效率，可能引发巨大震动或冲突。",
+    "planted_chapter": 5,
     "resolved_chapter": null,
     "status": "planted"
   }

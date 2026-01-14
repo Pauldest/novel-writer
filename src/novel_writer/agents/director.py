@@ -91,7 +91,12 @@ class DirectorAgent(BaseAgent[DirectorOutput]):
         
         # Character overview
         if novel.characters:
-            context_parts.append("\n# 主要角色")
+            # First, list all character names so Director knows everyone
+            all_names = list(novel.characters.keys())
+            context_parts.append(f"\n# 所有角色\n{', '.join(all_names)}")
+            
+            # Then show detailed descriptions for main characters
+            context_parts.append("\n# 主要角色详情")
             for name, char in list(novel.characters.items())[:10]:
                 context_parts.append(f"- {name}: {char.description[:100] if char.description else '未设定'}")
         
