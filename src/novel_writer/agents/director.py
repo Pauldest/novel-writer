@@ -64,6 +64,7 @@ class DirectorAgent(BaseAgent[DirectorOutput]):
         self,
         novel: Novel,
         next_chapter_number: int,
+        target_word_count: int = 5000,
         user_goal: Optional[str] = None,
         trace: Optional["TraceStore"] = None,
     ) -> DirectorOutput:
@@ -112,6 +113,17 @@ class DirectorAgent(BaseAgent[DirectorOutput]):
         # User goal
         if user_goal:
             context_parts.append(f"\n# 用户指定的本章目标\n{user_goal}")
+        
+        # Word count constraints and advice
+        context_parts.append(f"\n# 限制条件")
+        context_parts.append(f"目标字数: {target_word_count} 字")
+        
+        if target_word_count < 2000:
+            context_parts.append("建议: 字数较少，请聚焦于1-2个核心场景，避免过于复杂的支线。")
+        elif target_word_count > 5000:
+            context_parts.append("建议: 字数充裕，请安排丰富的剧情转折或深入的场景细节，确保内容饱满。")
+        else:
+            context_parts.append("建议: 请安排适量的剧情，保持正常的叙事节奏。")
         
         context_parts.append(f"\n# 任务\n请为第 {next_chapter_number} 章制定详细的写作指令。")
         

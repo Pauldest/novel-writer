@@ -124,6 +124,7 @@ class ChapterRunner:
         director_output = self.director.run(
             novel=novel,
             next_chapter_number=chapter_number,
+            target_word_count=settings.default_chapter_length,
             user_goal=chapter_goal,
             trace=trace,
         )
