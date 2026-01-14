@@ -23,6 +23,8 @@ WRITER_SYSTEM_PROMPT = """你是一位才华横溢的小说作家（Writer），
 - 控制节奏，张弛有度
 
 特别注意：
+- 【重要】严禁超出大纲范围。如果不属于本章大纲的事件（例如“第二天”或后续章节的剧情），绝对不要写。
+- 【重要】严格遵守字数限制，不要为了凑字数而注水。
 - 如果上下文中提到了某个物品/人物的描述，你必须保持一致
 - 不要引入上下文中未提及的重大设定
 - 遵循大纲中的场景顺序
@@ -80,6 +82,7 @@ class WriterAgent(BaseAgent[None]):
         prompt_parts.append(f"# 写作任务")
         prompt_parts.append(f"请根据以上上下文和大纲，撰写第{outline.chapter_number}章的正文内容。")
         prompt_parts.append(f"目标字数: 约{target_word_count}字")
+        prompt_parts.append(f"注意：只写大纲中规划的场景，不要自行拓展到后续时间线。")
         prompt_parts.append(f"\n请直接开始写作，不要添加任何元信息:")
         
         prompt = "\n".join(prompt_parts)
@@ -145,8 +148,10 @@ class WriterAgent(BaseAgent[None]):
         prompt_parts.append(review_feedback)
         
         prompt_parts.append("\n# 任务")
-        prompt_parts.append("请根据上述反馈修改原文。只修改有问题的部分，保持其他内容不变。")
-        prompt_parts.append("修改时请参考大纲和上下文，确保修改后的内容仍符合设定和风格。")
+        prompt_parts.append("请根据上述反馈修改原文。")
+        prompt_parts.append("1. 【重要】如果审核意见要求删除某些段落（如超出大纲的内容），你必须坚决删除，不要保留。")
+        prompt_parts.append("2. 只修改有问题的部分，保持其他内容不变。")
+        prompt_parts.append("3. 修改时请参考大纲和上下文，确保修改后的内容仍符合设定和风格。")
         prompt_parts.append("输出完整的修改后内容:")
         
         prompt = "\n".join(prompt_parts)
