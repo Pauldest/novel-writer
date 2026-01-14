@@ -75,6 +75,7 @@ class ChapterRunner:
         chapter_goal: str,
         chapter_number: Optional[int] = None,
         max_review_attempts: int = 3,
+        max_retries: Optional[int] = None,  # Alias for max_review_attempts (CLI compatibility)
     ) -> Chapter:
         """
         Generate a chapter.
@@ -83,10 +84,14 @@ class ChapterRunner:
             chapter_goal: The goal/theme for this chapter
             chapter_number: Optional chapter number (auto-incremented if not provided)
             max_review_attempts: Maximum review/revision cycles (default: 3)
+            max_retries: Alias for max_review_attempts (for CLI compatibility)
             
         Returns:
             The completed Chapter
         """
+        # Support max_retries as alias
+        if max_retries is not None:
+            max_review_attempts = max_retries
         # Get novel
         novel = self.structured_store.get_novel()
         if not novel:
