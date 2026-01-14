@@ -120,7 +120,7 @@ class DirectorAgent(BaseAgent[DirectorOutput]):
         
         if trace:
             trace.save_director_context(
-                full_prompt=prompt,
+                full_prompt=prompt + self.get_format_instruction(),
                 system_prompt=self.system_prompt
             )
             

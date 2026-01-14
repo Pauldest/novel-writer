@@ -50,6 +50,12 @@ class BaseAgent(ABC, Generic[T]):
         else:
             self._llm = get_llm(temperature=temperature, max_tokens=max_tokens)
     
+    def get_format_instruction(self) -> str:
+        """Get hidden format instruction from LLM if valid."""
+        if hasattr(self._llm, "get_format_instruction"):
+            return self._llm.get_format_instruction()
+        return ""
+    
     def invoke(self, user_input: str, **kwargs) -> T | str:
         """
         Invoke the agent with user input.

@@ -85,12 +85,12 @@ class DeepSeekStructuredLLM:
         self.llm = llm
         self.response_schema = response_schema
     
-    def invoke(self, messages: list) -> T:
-        """Invoke LLM and parse structured response."""
+    def get_format_instruction(self) -> str:
+        """Get the JSON format instruction string."""
         # Generate example JSON structure from schema
         example_json = self._generate_example_json(self.response_schema)
         
-        format_instruction = f"""
+        return f"""
 
 【重要】请严格按照以下JSON格式返回你的响应。只返回JSON，不要有其他文字：
 
@@ -102,6 +102,10 @@ class DeepSeekStructuredLLM:
 1. 只返回一个JSON对象
 2. 所有字段都必须填写实际内容
 3. 不要返回schema定义，要返回填充了实际数据的JSON"""
+
+    def invoke(self, messages: list) -> T:
+        """Invoke LLM and parse structured response."""
+        format_instruction = self.get_format_instruction()
         
         # Modify the last human message to include format instruction
         modified_messages = list(messages)

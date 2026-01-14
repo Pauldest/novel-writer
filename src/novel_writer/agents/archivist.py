@@ -133,7 +133,7 @@ class ArchivistAgent(BaseAgent[ArchiveResult]):
         
         if trace:
             trace.save_archivist_context(
-                full_prompt=prompt,
+                full_prompt=prompt + self.get_format_instruction(),
                 system_prompt=self.system_prompt
             )
             

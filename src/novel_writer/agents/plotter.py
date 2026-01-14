@@ -16,7 +16,7 @@ class PlotterOutput(BaseModel):
     title: str = Field(..., description="章节标题")
     scenes: list[str] = Field(..., description="场景序列，按顺序排列")
     beat_sheet: list[str] = Field(..., description="情节节拍，每个节拍描述一个关键moment")
-    estimated_word_count: int = Field(default=3000, description="预估字数")
+    estimated_word_count: int = Field(default=5000, description="预估字数")
     pov_character: str = Field(default="", description="本章视角人物")
     mood: str = Field(default="neutral", description="章节基调：tense/relaxed/mysterious/romantic/action等")
     hooks: list[str] = Field(default_factory=list, description="钩子/悬念，用于吸引读者")
@@ -126,7 +126,7 @@ class PlotterAgent(BaseAgent[PlotterOutput]):
         
         if trace:
             trace.save_plotter_context(
-                full_prompt=prompt,
+                full_prompt=prompt + self.get_format_instruction(),
                 system_prompt=self.system_prompt
             )
             

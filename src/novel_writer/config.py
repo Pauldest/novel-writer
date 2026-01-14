@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     
     # Novel Writer Settings
     max_retry_count: int = Field(default=3, alias="MAX_RETRY_COUNT")
-    default_chapter_length: int = Field(default=3000, alias="DEFAULT_CHAPTER_LENGTH")
+    default_chapter_length: int = Field(default=5000, alias="DEFAULT_CHAPTER_LENGTH")
     
     # Trace Settings
     trace_enabled: bool = Field(default=True, alias="TRACE_ENABLED")
