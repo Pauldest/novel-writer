@@ -94,6 +94,7 @@ class WriterAgent(BaseAgent[None]):
         original_content: str,
         review_feedback: str,
         context: ContextPacket,
+        outline: ChapterOutline = None,
     ) -> str:
         """
         Revise content based on reviewer feedback.
@@ -102,17 +103,42 @@ class WriterAgent(BaseAgent[None]):
             original_content: Original chapter content
             review_feedback: Feedback from Reviewer
             context: Context packet for reference
+            outline: Chapter outline to stay on track
             
         Returns:
             Revised chapter content
         """
         prompt_parts = []
         
-        # Context for consistency
+        # Full context (same as initial write)
         prompt_parts.append("# 参考上下文")
-        prompt_parts.append(context.character_states or "无特殊角色状态")
+        
+        if context.world_setting:
+            prompt_parts.append(f"## 世界观设定\n{context.world_setting}")
+        
+        if context.style_guide:
+            prompt_parts.append(f"## 风格指南\n{context.style_guide}")
+        
+        if context.previous_chapter_ending:
+            prompt_parts.append(f"## 上一章结尾（保持连贯）\n{context.previous_chapter_ending[:1000]}...")
+        
+        if context.character_states:
+            prompt_parts.append(f"## 角色状态\n{context.character_states}")
+        
+        # All relevant memories (not just the first one)
         if context.relevant_memories:
-            prompt_parts.append(f"相关记忆: {context.relevant_memories[0][:500]}...")
+            prompt_parts.append("## 相关记忆")
+            for memory in context.relevant_memories:
+                prompt_parts.append(f"- {memory}")
+        
+        # Chapter outline to stay on track
+        if outline:
+            prompt_parts.append(f"\n## 本章大纲")
+            prompt_parts.append(f"目标: {outline.goal}")
+            prompt_parts.append(f"关键事件: {', '.join(outline.key_events)}")
+            prompt_parts.append(f"涉及角色: {', '.join(outline.characters_involved)}")
+            if outline.foreshadowing:
+                prompt_parts.append(f"需埋伏笔: {', '.join(outline.foreshadowing)}")
         
         prompt_parts.append("\n# 原文内容")
         prompt_parts.append(original_content)
@@ -122,6 +148,7 @@ class WriterAgent(BaseAgent[None]):
         
         prompt_parts.append("\n# 任务")
         prompt_parts.append("请根据上述反馈修改原文。只修改有问题的部分，保持其他内容不变。")
+        prompt_parts.append("修改时请参考大纲和上下文，确保修改后的内容仍符合设定和风格。")
         prompt_parts.append("输出完整的修改后内容:")
         
         prompt = "\n".join(prompt_parts)

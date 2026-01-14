@@ -213,6 +213,7 @@ class ChapterRunner:
                     original_content=current_content,
                     review_feedback=feedback,
                     context=context,
+                    outline=outline,
                 )
                 if trace:
                     trace.save_writer_revision(current_content, retry_count + 1)
