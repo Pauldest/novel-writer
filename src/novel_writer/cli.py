@@ -160,6 +160,7 @@ def _write_single_chapter(chapter: Optional[int], max_retries: int, path: Path):
     # Create runner with project's stores
     runner = ChapterRunner(
         novel_id=project.novel_id,
+        novel_path=project.project_path,
         vector_store=project.vector_store,
         structured_store=project.structured_store,
     )
@@ -281,6 +282,7 @@ def _batch_write(count: int | None, max_retries: int, path: Path):
     # Create runner
     runner = ChapterRunner(
         novel_id=project.novel_id,
+        novel_path=project.project_path,
         vector_store=project.vector_store,
         structured_store=project.structured_store,
     )
