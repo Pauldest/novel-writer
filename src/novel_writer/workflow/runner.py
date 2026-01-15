@@ -1,5 +1,7 @@
 """Chapter Runner - Executes the chapter generation workflow."""
 
+import logging
+import time
 from typing import Optional, Callable
 from datetime import datetime
 from rich.console import Console
@@ -18,6 +20,8 @@ from ..agents.archivist import ArchivistAgent
 from ..config import settings
 from ..trace_store import TraceStore
 
+# Configure logging
+logger = logging.getLogger(__name__)
 
 console = Console()
 
@@ -121,13 +125,22 @@ class ChapterRunner:
         self._update_status("Director 正在规划章节...")
         if trace:
             trace.start_timer("Director")
-        director_output = self.director.run(
-            novel=novel,
-            next_chapter_number=chapter_number,
-            target_word_count=settings.default_chapter_length,
-            user_goal=chapter_goal,
-            trace=trace,
-        )
+        
+        step_start = time.time()
+        logger.info(f"[Workflow] Step 1: Director 开始 - 第{chapter_number}章")
+        try:
+            director_output = self.director.run(
+                novel=novel,
+                next_chapter_number=chapter_number,
+                target_word_count=settings.default_chapter_length,
+                user_goal=chapter_goal,
+                trace=trace,
+            )
+            logger.info(f"[Workflow] Step 1: Director 完成 - 耗时: {time.time() - step_start:.1f}s")
+        except Exception as e:
+            logger.error(f"[Workflow] Step 1: Director 失败 - 耗时: {time.time() - step_start:.1f}s, 错误: {e}")
+            raise
+        
         if trace:
             trace.save_director(director_output)
         
@@ -136,12 +149,21 @@ class ChapterRunner:
         previous_chapter = novel.get_latest_chapter()
         if trace:
             trace.start_timer("Plotter")
-        plotter_output, outline = self.plotter.run(
-            director_output=director_output,
-            novel=novel,
-            previous_chapter_summary=previous_chapter.summary if previous_chapter else None,
-            trace=trace,
-        )
+        
+        step_start = time.time()
+        logger.info(f"[Workflow] Step 2: Plotter 开始 - 第{chapter_number}章")
+        try:
+            plotter_output, outline = self.plotter.run(
+                director_output=director_output,
+                novel=novel,
+                previous_chapter_summary=previous_chapter.summary if previous_chapter else None,
+                trace=trace,
+            )
+            logger.info(f"[Workflow] Step 2: Plotter 完成 - 耗时: {time.time() - step_start:.1f}s")
+        except Exception as e:
+            logger.error(f"[Workflow] Step 2: Plotter 失败 - 耗时: {time.time() - step_start:.1f}s, 错误: {e}")
+            raise
+        
         state["outline"] = outline
         if trace:
             trace.save_plotter(plotter_output, outline)
@@ -178,12 +200,19 @@ class ChapterRunner:
             if trace:
                 trace.start_timer("Writer")
             
-            current_content = self.writer.run(
-                outline=outline,
-                context=context,
-                target_word_count=settings.default_chapter_length,
-                trace=trace,
-            )
+            step_start = time.time()
+            logger.info(f"[Workflow] Step 4: Writer 开始 - 第{chapter_number}章 版本{version}")
+            try:
+                current_content = self.writer.run(
+                    outline=outline,
+                    context=context,
+                    target_word_count=settings.default_chapter_length,
+                    trace=trace,
+                )
+                logger.info(f"[Workflow] Step 4: Writer 完成 - 版本{version}, 耗时: {time.time() - step_start:.1f}s, 字数: {len(current_content)}")
+            except Exception as e:
+                logger.error(f"[Workflow] Step 4: Writer 失败 - 版本{version}, 耗时: {time.time() - step_start:.1f}s, 错误: {e}")
+                raise
             
             if trace:
                 trace.save_writer_version(current_content, version)
@@ -198,14 +227,22 @@ class ChapterRunner:
             if trace:
                 trace.start_timer("Reviewer")
             
-            review1 = self.reviewer.run(
-                content=current_content,
-                outline=outline,
-                context=context,
-                target_word_count=settings.default_chapter_length,
-                attempt=1,
-                trace=trace,
-            )
+            step_start = time.time()
+            logger.info(f"[Workflow] Step 5: Reviewer 开始 - 版本{version} 第1次审核")
+            try:
+                review1 = self.reviewer.run(
+                    content=current_content,
+                    outline=outline,
+                    context=context,
+                    target_word_count=settings.default_chapter_length,
+                    attempt=1,
+                    trace=trace,
+                )
+                logger.info(f"[Workflow] Step 5: Reviewer 完成 - 版本{version} 第1次, 耗时: {time.time() - step_start:.1f}s, 评分: {review1.score}")
+            except Exception as e:
+                logger.error(f"[Workflow] Step 5: Reviewer 失败 - 版本{version} 第1次, 耗时: {time.time() - step_start:.1f}s, 错误: {e}")
+                raise
+            
             reviews.append(review1)
             if trace:
                 trace.save_review_with_version(review1, version, 1)
@@ -222,15 +259,23 @@ class ChapterRunner:
             self._update_status(f"版本 {version} 第 1 次审核未通过，尝试第 2 次审核...")
             if trace:
                 trace.start_timer("Reviewer")
-                
-            review2 = self.reviewer.run(
-                content=current_content,
-                outline=outline,
-                context=context,
-                target_word_count=settings.default_chapter_length,
-                attempt=2,
-                trace=trace,
-            )
+            
+            step_start = time.time()
+            logger.info(f"[Workflow] Step 5: Reviewer 开始 - 版本{version} 第2次审核")
+            try:
+                review2 = self.reviewer.run(
+                    content=current_content,
+                    outline=outline,
+                    context=context,
+                    target_word_count=settings.default_chapter_length,
+                    attempt=2,
+                    trace=trace,
+                )
+                logger.info(f"[Workflow] Step 5: Reviewer 完成 - 版本{version} 第2次, 耗时: {time.time() - step_start:.1f}s, 评分: {review2.score}")
+            except Exception as e:
+                logger.error(f"[Workflow] Step 5: Reviewer 失败 - 版本{version} 第2次, 耗时: {time.time() - step_start:.1f}s, 错误: {e}")
+                raise
+            
             reviews.append(review2)
             if trace:
                 trace.save_review_with_version(review2, version, 2)
@@ -263,14 +308,22 @@ class ChapterRunner:
                 if trace:
                     trace.start_timer("Writer")
                 
-                # Revise
-                current_content = self.writer.revise(
-                    original_content=current_content,
-                    review_feedback=feedback,
-                    context=context,
-                    outline=outline,
-                    trace=trace,
-                )
+                step_start = time.time()
+                logger.info(f"[Workflow] Step 6: Writer 开始修订 - 版本{version}")
+                try:
+                    # Revise
+                    current_content = self.writer.revise(
+                        original_content=current_content,
+                        review_feedback=feedback,
+                        context=context,
+                        outline=outline,
+                        trace=trace,
+                    )
+                    logger.info(f"[Workflow] Step 6: Writer 修订完成 - 版本{version}, 耗时: {time.time() - step_start:.1f}s, 字数: {len(current_content)}")
+                except Exception as e:
+                    logger.error(f"[Workflow] Step 6: Writer 修订失败 - 版本{version}, 耗时: {time.time() - step_start:.1f}s, 错误: {e}")
+                    raise
+                
                 state["draft"] = current_content
                 
                 if trace:

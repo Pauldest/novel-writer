@@ -1,7 +1,9 @@
 """LLM utilities - Support for OpenAI and DeepSeek."""
 
 import json
+import logging
 import re
+import time
 from typing import TypeVar
 
 from langchain_openai import ChatOpenAI
@@ -10,6 +12,13 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from pydantic import BaseModel
 
 from .config import settings
+
+# Configure logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 
 T = TypeVar("T", bound=BaseModel)
@@ -115,9 +124,24 @@ class DeepSeekStructuredLLM:
                 content=modified_messages[-1].content + format_instruction
             )
         
-        # Call LLM
-        response = self.llm.invoke(modified_messages)
-        content = response.content
+        # Calculate prompt size for logging
+        total_prompt_chars = sum(len(m.content) for m in modified_messages if hasattr(m, 'content'))
+        schema_name = self.response_schema.__name__
+        
+        logger.info(f"[LLM] 开始调用 - Schema: {schema_name}, Prompt大小: {total_prompt_chars} 字符")
+        start_time = time.time()
+        
+        try:
+            # Call LLM
+            response = self.llm.invoke(modified_messages)
+            elapsed = time.time() - start_time
+            content = response.content
+            
+            logger.info(f"[LLM] 调用完成 - Schema: {schema_name}, 耗时: {elapsed:.1f}s, 响应大小: {len(content)} 字符")
+        except Exception as e:
+            elapsed = time.time() - start_time
+            logger.error(f"[LLM] 调用失败 - Schema: {schema_name}, 耗时: {elapsed:.1f}s, 错误: {type(e).__name__}: {str(e)[:200]}")
+            raise
         
         # Extract JSON from response
         json_str = self._extract_json(content)
@@ -132,9 +156,11 @@ class DeepSeekStructuredLLM:
             try:
                 sanitized_str = self._sanitize_json(json_str)
                 data = json.loads(sanitized_str, strict=False)
+                logger.warning(f"[LLM] JSON需要修复后解析成功 - Schema: {schema_name}")
                 return self.response_schema.model_validate(data)
             except Exception as e2:
-                 # If sanitization fails, raise original error with context
+                # If sanitization fails, raise original error with context
+                logger.error(f"[LLM] JSON解析失败 - Schema: {schema_name}, 原始错误: {e}, 修复后错误: {e2}")
                 raise ValueError(f"Failed to parse LLM response as JSON: {e}\nSanitization failed: {e2}\nResponse: {content}")
 
     def _sanitize_json(self, text: str) -> str:

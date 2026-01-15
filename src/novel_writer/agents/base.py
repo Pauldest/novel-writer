@@ -1,5 +1,7 @@
 """Base Agent class - Foundation for all agents."""
 
+import logging
+import time
 from abc import ABC, abstractmethod
 from typing import Any, TypeVar, Generic
 from pydantic import BaseModel
@@ -9,6 +11,8 @@ from langchain_core.messages import SystemMessage, HumanMessage
 
 from ..llm import get_llm, get_structured_llm
 
+# Configure logging
+logger = logging.getLogger(__name__)
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -76,13 +80,27 @@ class BaseAgent(ABC, Generic[T]):
             HumanMessage(content=user_input),
         ]
         
-        # Invoke LLM
-        response = self._llm.invoke(messages)
+        agent_name = self.__class__.__name__
+        input_size = len(user_input)
+        logger.info(f"[Agent] {agent_name} 开始调用 - 输入大小: {input_size} 字符")
+        start_time = time.time()
         
-        # Return appropriate type
-        if self.response_schema:
-            return response  # Already parsed by structured output
-        return response.content
+        try:
+            # Invoke LLM
+            response = self._llm.invoke(messages)
+            elapsed = time.time() - start_time
+            
+            # Return appropriate type
+            if self.response_schema:
+                logger.info(f"[Agent] {agent_name} 完成 - 耗时: {elapsed:.1f}s (结构化输出)")
+                return response  # Already parsed by structured output
+            
+            logger.info(f"[Agent] {agent_name} 完成 - 耗时: {elapsed:.1f}s, 响应大小: {len(response.content)} 字符")
+            return response.content
+        except Exception as e:
+            elapsed = time.time() - start_time
+            logger.error(f"[Agent] {agent_name} 失败 - 耗时: {elapsed:.1f}s, 错误: {type(e).__name__}: {str(e)[:200]}")
+            raise
     
     @abstractmethod
     def run(self, **kwargs) -> Any:
