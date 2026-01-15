@@ -235,6 +235,10 @@ def write_n(
         3, "--retries", "-r",
         help="每章最大修改次数"
     ),
+    continue_on_fail: bool = typer.Option(
+        False, "--continue", "-c",
+        help="失败时继续下一章（默认失败时停止）"
+    ),
     path: Path = typer.Option(
         Path("."), "--path", "-p",
         help="项目目录路径"
@@ -244,10 +248,10 @@ def write_n(
     生成指定数量的章节。
     
     Usage:
-        novel-writer write-n 10       # 生成接下来10章
-        novel-writer write-n 50       # 生成接下来50章
+        novel-writer write-n 10       # 生成接下来10章（失败时停止）
+        novel-writer write-n 10 -c    # 生成接下来10章（失败时继续）
     """
-    _batch_write(count=count, max_retries=max_retries, path=path)
+    _batch_write(count=count, max_retries=max_retries, continue_on_fail=continue_on_fail, path=path)
 
 
 @app.command("write-all")
@@ -255,6 +259,10 @@ def write_all(
     max_retries: int = typer.Option(
         3, "--retries", "-r",
         help="每章最大修改次数"
+    ),
+    continue_on_fail: bool = typer.Option(
+        False, "--continue", "-c",
+        help="失败时继续下一章（默认失败时停止）"
     ),
     path: Path = typer.Option(
         Path("."), "--path", "-p",
@@ -265,12 +273,13 @@ def write_all(
     生成所有剩余章节。
     
     Usage:
-        novel-writer write-all
+        novel-writer write-all        # 生成所有章节（失败时停止）
+        novel-writer write-all -c     # 生成所有章节（失败时继续）
     """
-    _batch_write(count=None, max_retries=max_retries, path=path)
+    _batch_write(count=None, max_retries=max_retries, continue_on_fail=continue_on_fail, path=path)
 
 
-def _batch_write(count: int | None, max_retries: int, path: Path):
+def _batch_write(count: int | None, max_retries: int, continue_on_fail: bool, path: Path):
     """Internal function for batch writing chapters."""
     project = find_novel_project(path)
     if not project:
@@ -297,6 +306,10 @@ def _batch_write(count: int | None, max_retries: int, path: Path):
         pending = pending[:count]
     
     console.print(f"待生成章节: {len(pending)} 章")
+    if continue_on_fail:
+        console.print("[dim]模式: 失败时继续下一章[/dim]")
+    else:
+        console.print("[dim]模式: 失败时停止（使用 -c 可继续）[/dim]")
     console.print()
     
     # Create runner
@@ -351,13 +364,19 @@ def _batch_write(count: int | None, max_retries: int, path: Path):
         except Exception as e:
             console.print(f"[red]✗ 第{chapter_number}章失败: {e}[/red]")
             failed += 1
-            # Continue to next chapter instead of stopping
-            continue
+            
+            if continue_on_fail:
+                console.print("[yellow]继续下一章...[/yellow]")
+                continue
+            else:
+                # Stop on failure
+                console.print("[red]批量生成已停止。使用 -c 选项可在失败时继续。[/red]")
+                break
     
     # Summary
     console.print(f"\n{'='*50}")
     console.print(Panel(
-        f"[bold]批量生成完成[/bold]\n\n"
+        f"[bold]批量生成{'完成' if failed == 0 else '结束'}[/bold]\n\n"
         f"成功: [green]{completed}[/green] 章\n"
         f"失败: [red]{failed}[/red] 章\n"
         f"总计: {len(pending)} 章",

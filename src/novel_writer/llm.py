@@ -27,7 +27,7 @@ T = TypeVar("T", bound=BaseModel)
 def get_llm(
     temperature: float = 0.7,
     max_tokens: int = 4096,
-    timeout: int = 180,  # 3 minutes timeout
+    timeout: int = 300,  # 5 minutes timeout (increased from 3 minutes)
 ) -> BaseChatModel:
     """
     Get the LLM instance based on configuration.
@@ -40,7 +40,7 @@ def get_llm(
         "temperature": temperature,
         "max_tokens": max_tokens,
         "timeout": timeout,
-        "max_retries": 2,
+        "max_retries": 3,  # Increased from 2 to 3
     }
     
     if settings.llm_provider == "openai":
