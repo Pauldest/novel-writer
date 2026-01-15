@@ -4,6 +4,7 @@ import logging
 import time
 from typing import Optional, Callable
 from datetime import datetime
+from pathlib import Path
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
@@ -19,8 +20,9 @@ from ..agents.reviewer import ReviewerAgent, ReviewResult
 from ..agents.archivist import ArchivistAgent
 from ..config import settings
 from ..trace_store import TraceStore
+from ..logging_config import setup_logging, get_log_dir_for_novel
 
-# Configure logging
+# Get logger (configured via setup_logging)
 logger = logging.getLogger(__name__)
 
 console = Console()
@@ -56,6 +58,17 @@ class ChapterRunner:
         self.novel_path = novel_path
         self.on_status_update = on_status_update or (lambda x: None)
         self.trace_enabled = settings.trace_enabled
+        
+        # Set up logging with file output if novel_path is available
+        self.log_file_path = None
+        if novel_path:
+            log_dir = get_log_dir_for_novel(Path(novel_path))
+            self.log_file_path = setup_logging(log_dir)
+            if self.log_file_path:
+                logger.info(f"日志文件: {self.log_file_path}")
+        else:
+            # Console-only logging
+            setup_logging(log_dir=None)
         
         # Use provided stores or create new ones
         self.vector_store = vector_store or VectorStore(novel_id)
