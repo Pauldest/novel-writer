@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "id": "fs_1_4",
+    "description": "卡尔声称将在三天后的实践考核中‘亲自关注’林恩的表现，暗示可能制造麻烦。",
+    "planted_chapter": 1,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_1_4",
+    "description": "古代法师的简化模型手稿被列为‘危险谬误’，暗示林恩尝试优化模型将伴随巨大风险（精神反噬、魔力失控）。",
+    "planted_chapter": 1,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_1_4",
+    "description": "莉亚·瑟银对尘封手稿的兴趣以及她‘厌倦了永恒的寂静’的言论，暗示她可能对学院主流知识体系抱有异见，或自身有研究野心。",
+    "planted_chapter": 1,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_1_4",
+    "description": "林恩体内发现的‘淤塞魔力网络’为后续可能的能力开发或‘废柴’体质逆转埋下伏笔。",
+    "planted_chapter": 1,
+    "resolved_chapter": null,
+    "status": "planted"
+  }
+]

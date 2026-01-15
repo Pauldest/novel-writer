@@ -193,11 +193,11 @@ class ChapterRunner:
         if trace:
             trace.save_context(context)
         
-        # Step 4 & 5: Two-tier version/review loop
-        # Outer loop: Writer versions (max 3)
-        # Inner loop: Review chances per version (max 2, no revision between reviews)
-        max_versions = 3
-        max_reviews_per_version = 2
+        # Step 4 & 5: Two-tier version/revision loop
+        # Outer loop: Writer versions (max 2 complete rewrites)
+        # Inner loop: Revision attempts per version (max 3 review-revise cycles)
+        max_versions = 2
+        max_revisions_per_version = 3
         
         current_content = None
         final_review_result = None
@@ -232,126 +232,88 @@ class ChapterRunner:
             
             state["draft"] = current_content
             
-            # Double Review Logic (Two independent reviews per version)
-            reviews = []
-            
-            # 1. First Review
-            self._update_status(f"版本 {version} 第 1 次审核...")
-            if trace:
-                trace.start_timer("Reviewer")
-            
-            step_start = time.time()
-            logger.info(f"[Workflow] Step 5: Reviewer 开始 - 版本{version} 第1次审核")
-            try:
-                review1 = self.reviewer.run(
-                    content=current_content,
-                    outline=outline,
-                    context=context,
-                    target_word_count=settings.default_chapter_length,
-                    attempt=1,
-                    trace=trace,
-                )
-                logger.info(f"[Workflow] Step 5: Reviewer 完成 - 版本{version} 第1次, 耗时: {time.time() - step_start:.1f}s, 评分: {review1.score}")
-            except Exception as e:
-                logger.error(f"[Workflow] Step 5: Reviewer 失败 - 版本{version} 第1次, 耗时: {time.time() - step_start:.1f}s, 错误: {e}")
-                raise
-            
-            reviews.append(review1)
-            if trace:
-                trace.save_review_with_version(review1, version, 1)
-            
-            console.print(f"  版本 {version} 第一次审核: 评分 {review1.score}/100, 状态: {review1.status}")
-            
-            if review1.status == "pass":
-                self._update_status(f"版本 {version} 审核通过!")
-                passed = True
-                state["review_result"] = review1
-                break
-            
-            # 2. Second Review (if first failed)
-            self._update_status(f"版本 {version} 第 1 次审核未通过，尝试第 2 次审核...")
-            if trace:
-                trace.start_timer("Reviewer")
-            
-            step_start = time.time()
-            logger.info(f"[Workflow] Step 5: Reviewer 开始 - 版本{version} 第2次审核")
-            try:
-                review2 = self.reviewer.run(
-                    content=current_content,
-                    outline=outline,
-                    context=context,
-                    target_word_count=settings.default_chapter_length,
-                    attempt=2,
-                    trace=trace,
-                )
-                logger.info(f"[Workflow] Step 5: Reviewer 完成 - 版本{version} 第2次, 耗时: {time.time() - step_start:.1f}s, 评分: {review2.score}")
-            except Exception as e:
-                logger.error(f"[Workflow] Step 5: Reviewer 失败 - 版本{version} 第2次, 耗时: {time.time() - step_start:.1f}s, 错误: {e}")
-                raise
-            
-            reviews.append(review2)
-            if trace:
-                trace.save_review_with_version(review2, version, 2)
-            
-            console.print(f"  版本 {version} 第二次审核: 评分 {review2.score}/100, 状态: {review2.status}")
-            
-            if review2.status == "pass":
-                self._update_status(f"版本 {version} 审核通过!")
-                passed = True
-                state["review_result"] = review2
-                break
-            
-            # 3. Both failed - Select best review for revision
-            console.print(f"  [yellow]两次审核均未通过，择优修改...[/yellow]")
-            
-            # Selection logic: Higher score wins
-            best_review = max(reviews, key=lambda r: r.score)
-            state["review_result"] = best_review
-            
-            if best_review.status == "rewrite_needed":
-                console.print(f"  [red]最佳审核结果仍判定需要重写 (Score: {best_review.score})[/red]")
-                final_review_result = best_review
-                continue # Next version loop
-            
-            # If revision_needed, execute revision
-            if best_review.status == "revision_needed":
-                self._update_status(f"根据评分较高 ({best_review.score}) 的意见进行修订...")
-                feedback = self.reviewer.format_feedback_for_writer(best_review)
-                
+            # Inner loop: Review-Revise cycles (max 3 per version)
+            for revision_attempt in range(1, max_revisions_per_version + 1):
+                # Review current content
+                self._update_status(f"版本 {version} 第 {revision_attempt} 次审核...")
                 if trace:
-                    trace.start_timer("Writer")
+                    trace.start_timer("Reviewer")
                 
                 step_start = time.time()
-                logger.info(f"[Workflow] Step 6: Writer 开始修订 - 版本{version}")
+                logger.info(f"[Workflow] Step 5: Reviewer 开始 - 版本{version} 第{revision_attempt}次审核")
                 try:
-                    # Revise
-                    current_content = self.writer.revise(
-                        original_content=current_content,
-                        review_feedback=feedback,
-                        context=context,
+                    review_result = self.reviewer.run(
+                        content=current_content,
                         outline=outline,
+                        context=context,
+                        target_word_count=settings.default_chapter_length,
+                        attempt=revision_attempt,
                         trace=trace,
                     )
-                    logger.info(f"[Workflow] Step 6: Writer 修订完成 - 版本{version}, 耗时: {time.time() - step_start:.1f}s, 字数: {len(current_content)}")
+                    logger.info(f"[Workflow] Step 5: Reviewer 完成 - 版本{version} 第{revision_attempt}次, 耗时: {time.time() - step_start:.1f}s, 评分: {review_result.score}")
                 except Exception as e:
-                    logger.error(f"[Workflow] Step 6: Writer 修订失败 - 版本{version}, 耗时: {time.time() - step_start:.1f}s, 错误: {e}")
+                    logger.error(f"[Workflow] Step 5: Reviewer 失败 - 版本{version} 第{revision_attempt}次, 耗时: {time.time() - step_start:.1f}s, 错误: {e}")
                     raise
                 
-                state["draft"] = current_content
-                
                 if trace:
-                    trace.save_writer_revision(current_content, version, 1)
+                    trace.save_review_with_version(review_result, version, revision_attempt)
                 
-                # Treat this revised version as the final output of this version cycle
-                # We do NOT review it again in this version loop (as per user request "Execute corresponding modification" then implicit end or next version?)
-                # Actually, usually we should verify revision, but user says "until two reviews fail, then execute modification".
-                # It implies the modification is the result.
-                # Use this result as the potential final if we run out of versions.
-                # We clear final_review_result to prevent the fallback logic from re-revising this already-revised content
-                final_review_result = None
+                console.print(f"  版本 {version} 第 {revision_attempt} 次审核: 评分 {review_result.score}/100, 状态: {review_result.status}")
                 
-                console.print(f"  [dim]版本 {version} 修订完成。[/dim]")
-                continue
+                # Check if passed
+                if review_result.status == "pass":
+                    self._update_status(f"版本 {version} 审核通过!")
+                    passed = True
+                    state["review_result"] = review_result
+                    break
+                
+                # Check if rewrite is needed (skip remaining revisions, go to next version)
+                if review_result.status == "rewrite_needed":
+                    console.print(f"  [red]审核判定需要重写 (Score: {review_result.score})[/red]")
+                    final_review_result = review_result
+                    break  # Exit revision loop, continue to next version
+                
+                # revision_needed: perform revision if we have attempts left
+                if revision_attempt < max_revisions_per_version:
+                    self._update_status(f"版本 {version} 第 {revision_attempt} 次修订...")
+                    feedback = self.reviewer.format_feedback_for_writer(review_result)
+                    
+                    if trace:
+                        trace.start_timer("Writer")
+                    
+                    step_start = time.time()
+                    logger.info(f"[Workflow] Step 6: Writer 开始修订 - 版本{version} 第{revision_attempt}次")
+                    try:
+                        current_content = self.writer.revise(
+                            original_content=current_content,
+                            review_feedback=feedback,
+                            context=context,
+                            outline=outline,
+                            trace=trace,
+                        )
+                        logger.info(f"[Workflow] Step 6: Writer 修订完成 - 版本{version} 第{revision_attempt}次, 耗时: {time.time() - step_start:.1f}s, 字数: {len(current_content)}")
+                    except Exception as e:
+                        logger.error(f"[Workflow] Step 6: Writer 修订失败 - 版本{version} 第{revision_attempt}次, 耗时: {time.time() - step_start:.1f}s, 错误: {e}")
+                        raise
+                    
+                    state["draft"] = current_content
+                    
+                    if trace:
+                        trace.save_writer_revision(current_content, version, revision_attempt)
+                    
+                    console.print(f"  [dim]版本 {version} 第 {revision_attempt} 次修订完成。[/dim]")
+                else:
+                    # Last revision attempt failed, save for potential final revision
+                    console.print(f"  [yellow]版本 {version} 已用完所有修订机会[/yellow]")
+                    final_review_result = review_result
+            
+            # Check if we passed in the inner loop
+            if passed:
+                break
+            
+            # If we're not on the last version, continue to next version
+            if version < max_versions:
+                console.print(f"  [yellow]版本 {version} 未通过，将重写新版本...[/yellow]")
 
         
         # If all versions failed (3 versions x 3 reviews each), do final revision

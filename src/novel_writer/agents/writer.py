@@ -149,7 +149,13 @@ class WriterAgent(BaseAgent[None]):
         """
         prompt_parts = []
         
-        # Full context (same as initial write)
+        # 1. Review feedback FIRST - this is the most important part
+        prompt_parts.append("# 🔴 审核反馈（必须优先处理）")
+        prompt_parts.append(review_feedback)
+        
+        prompt_parts.append("\n---\n")
+        
+        # 2. Reference context
         prompt_parts.append("# 参考上下文")
         
         if context.world_setting:
@@ -179,12 +185,11 @@ class WriterAgent(BaseAgent[None]):
             if outline.foreshadowing:
                 prompt_parts.append(f"需埋伏笔: {', '.join(outline.foreshadowing)}")
         
+        # 3. Original content
         prompt_parts.append("\n# 原文内容")
         prompt_parts.append(original_content)
         
-        prompt_parts.append("\n# 审核反馈")
-        prompt_parts.append(review_feedback)
-        
+        # 4. Task instructions
         prompt_parts.append("\n# 任务")
         prompt_parts.append("请根据上述反馈修改原文。")
         prompt_parts.append("1. 【重要】如果审核意见要求删除某些段落（如超出大纲的内容），你必须坚决删除，不要保留。")

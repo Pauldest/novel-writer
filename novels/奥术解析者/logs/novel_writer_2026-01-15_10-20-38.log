@@ -1,0 +1,35 @@
+2026-01-15 10:20:38 - novel_writer.workflow.runner - INFO - 日志文件: /Users/lutao/Documents/workspace/novel-writer/novels/奥术解析者/logs/novel_writer_2026-01-15_10-20-38.log
+2026-01-15 10:20:38 - novel_writer.workflow.runner - INFO - [Workflow] Step 1: Director 开始 - 第1章
+2026-01-15 10:20:38 - novel_writer.agents.base - INFO - [Agent] DirectorAgent 开始调用 - 输入大小: 32846 字符
+2026-01-15 10:20:38 - novel_writer.llm - INFO - [LLM] 开始调用 - Schema: DirectorOutput, Prompt大小: 33665 字符
+2026-01-15 10:21:37 - novel_writer.llm - INFO - [LLM] 调用完成 - Schema: DirectorOutput, 耗时: 58.3s, 响应大小: 2724 字符
+2026-01-15 10:21:37 - novel_writer.agents.base - INFO - [Agent] DirectorAgent 完成 - 耗时: 58.3s (结构化输出)
+2026-01-15 10:21:37 - novel_writer.workflow.runner - INFO - [Workflow] Step 1: Director 完成 - 耗时: 58.3s
+2026-01-15 10:21:37 - novel_writer.workflow.runner - INFO - [Workflow] Step 2: Plotter 开始 - 第1章
+2026-01-15 10:21:37 - novel_writer.agents.base - INFO - [Agent] PlotterAgent 开始调用 - 输入大小: 1835 字符
+2026-01-15 10:21:37 - novel_writer.llm - INFO - [LLM] 开始调用 - Schema: PlotterOutput, Prompt大小: 2652 字符
+2026-01-15 10:22:26 - novel_writer.llm - INFO - [LLM] 调用完成 - Schema: PlotterOutput, 耗时: 49.3s, 响应大小: 2154 字符
+2026-01-15 10:22:26 - novel_writer.agents.base - INFO - [Agent] PlotterAgent 完成 - 耗时: 49.3s (结构化输出)
+2026-01-15 10:22:26 - novel_writer.workflow.runner - INFO - [Workflow] Step 2: Plotter 完成 - 耗时: 49.3s
+2026-01-15 10:22:26 - novel_writer.workflow.runner - INFO - [Workflow] Step 4: Writer 开始 - 第1章 版本1
+2026-01-15 10:22:26 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 4544 字符
+2026-01-15 10:25:04 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 158.0s, 响应大小: 6775 字符
+2026-01-15 10:25:04 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 10:25:39 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 35.0s, 响应大小: 1417 字符
+2026-01-15 10:25:39 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 10:27:26 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 106.6s, 响应大小: 4569 字符
+2026-01-15 10:27:26 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 10:29:42 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 135.6s, 响应大小: 5543 字符
+2026-01-15 10:29:42 - novel_writer.workflow.runner - INFO - [Workflow] Step 4: Writer 完成 - 版本1, 耗时: 435.2s, 字数: 18304
+2026-01-15 10:29:42 - novel_writer.workflow.runner - INFO - [Workflow] Step 5: Reviewer 开始 - 版本1 第1次审核
+2026-01-15 10:29:42 - novel_writer.agents.base - INFO - [Agent] ReviewerAgent 开始调用 - 输入大小: 19550 字符
+2026-01-15 10:29:42 - novel_writer.llm - INFO - [LLM] 开始调用 - Schema: ReviewResult, Prompt大小: 21228 字符
+2026-01-15 10:30:43 - novel_writer.llm - INFO - [LLM] 调用完成 - Schema: ReviewResult, 耗时: 61.3s, 响应大小: 3005 字符
+2026-01-15 10:30:43 - novel_writer.agents.base - INFO - [Agent] ReviewerAgent 完成 - 耗时: 61.3s (结构化输出)
+2026-01-15 10:30:43 - novel_writer.workflow.runner - INFO - [Workflow] Step 5: Reviewer 完成 - 版本1 第1次, 耗时: 61.3s, 评分: 45
+2026-01-15 10:30:43 - novel_writer.workflow.runner - INFO - [Workflow] Step 5: Reviewer 开始 - 版本1 第2次审核
+2026-01-15 10:30:43 - novel_writer.agents.base - INFO - [Agent] ReviewerAgent 开始调用 - 输入大小: 19550 字符
+2026-01-15 10:30:43 - novel_writer.llm - INFO - [LLM] 开始调用 - Schema: ReviewResult, Prompt大小: 21228 字符
+2026-01-15 16:19:27 - novel_writer.llm - ERROR - [LLM] 调用失败 - Schema: ReviewResult, 耗时: 20924.5s, 错误: APITimeoutError: Request timed out.
+2026-01-15 16:19:27 - novel_writer.agents.base - ERROR - [Agent] ReviewerAgent 失败 - 耗时: 20924.5s, 错误: APITimeoutError: Request timed out.
+2026-01-15 16:19:27 - novel_writer.workflow.runner - ERROR - [Workflow] Step 5: Reviewer 失败 - 版本1 第2次, 耗时: 20924.5s, 错误: Request timed out.

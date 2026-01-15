@@ -6,6 +6,7 @@ import re
 import time
 from typing import TypeVar
 
+import httpx
 from langchain_openai import ChatOpenAI
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import SystemMessage, HumanMessage
@@ -23,7 +24,8 @@ T = TypeVar("T", bound=BaseModel)
 def get_llm(
     temperature: float = 0.7,
     max_tokens: int = 4096,
-    timeout: int = 300,  # 5 minutes timeout (increased from 3 minutes)
+    timeout: int = 300,  # 5 minutes read timeout
+    connect_timeout: int = 30,  # 30 seconds connect timeout
 ) -> BaseChatModel:
     """
     Get the LLM instance based on configuration.
@@ -31,11 +33,26 @@ def get_llm(
     Supports:
     - OpenAI (gpt-4o, gpt-4-turbo, etc.)
     - DeepSeek (deepseek-chat, deepseek-coder)
+    
+    Args:
+        temperature: Sampling temperature
+        max_tokens: Maximum tokens in response
+        timeout: Read timeout in seconds (how long to wait for response)
+        connect_timeout: Connect timeout in seconds (how long to wait for connection)
     """
+    # Use httpx.Timeout for explicit timeout control
+    # This ensures both connect and read timeouts are properly enforced
+    request_timeout = httpx.Timeout(
+        connect=float(connect_timeout),  # Time to establish connection
+        read=float(timeout),              # Time to read response
+        write=60.0,                        # Time to send request
+        pool=30.0,                         # Time to acquire connection from pool
+    )
+    
     common_kwargs = {
         "temperature": temperature,
         "max_tokens": max_tokens,
-        "timeout": timeout,
+        "timeout": request_timeout,
         "max_retries": 3,  # Increased from 2 to 3
     }
     
