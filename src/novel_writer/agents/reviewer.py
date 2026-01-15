@@ -38,16 +38,16 @@ class ReviewResult(BaseModel):
         has_major = any(issue.severity == "major" for issue in self.issues)
         
         # Apply rules:
-        # - pass: score >= 70 AND no critical issues
+        # - pass: score >= 60 AND no critical issues
         # - rewrite_needed: score < 50 OR has structural issues
         # - revision_needed: everything else
         
-        if self.score >= 70 and not has_critical:
+        if self.score >= 60 and not has_critical:
             object.__setattr__(self, 'status', 'pass')
         elif self.score < 50:
             object.__setattr__(self, 'status', 'rewrite_needed')
         else:
-            # Has critical issue or score in 50-69 range
+            # Has critical issue or score in 50-59 range
             object.__setattr__(self, 'status', 'revision_needed')
 
 
@@ -93,14 +93,14 @@ REVIEWER_SYSTEM_PROMPT = """你是一位严谨的小说编辑（Reviewer），�
 
 评分标准：
 - 90-100: 优秀，无需修改
-- 70-89: 良好，有小问题但不影响阅读
-- 60-69: 一般，需要修改部分内容
-- 40-59: 较差，需要大幅修改
+- 60-89: 良好，有小问题但不影响阅读
+- 50-59: 一般，需要修改部分内容
+- 40-49: 较差，需要大幅修改
 - 0-39: 很差，建议重写
 
 status 判定：
-- pass: 评分 >= 70 且无 critical 问题
-- revision_needed: 评分 >= 50 或有 major 问题但可修改
+- pass: 评分 >= 60 且无 critical 问题
+- revision_needed: 评分 50-59 或有 critical 问题
 - rewrite_needed: 评分 < 50 或有无法修改的结构性问题
 
 **重要**: issues 中的 category 字段必须使用以下英文值之一：
