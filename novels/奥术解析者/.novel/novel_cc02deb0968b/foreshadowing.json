@@ -26,5 +26,33 @@
     "planted_chapter": 1,
     "resolved_chapter": null,
     "status": "planted"
+  },
+  {
+    "id": "fs_2_4",
+    "description": "[fs_2_1] ‘全知解析系统’的突然激活，其来源、目的以及与‘主神/管理员’的可能关联未知。",
+    "planted_chapter": 2,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_2_4",
+    "description": "[fs_2_2] 系统提示‘权限等级’、‘本源点数’和‘达成重大认知突破’，暗示宿主成长路径与深度探索世界本质相关。",
+    "planted_chapter": 2,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_2_4",
+    "description": "[fs_2_3] 火绒石中发现的‘燃素结晶（劣化）’及其‘半衰变状态’，暗示世界上存在更高级、更稳定的能量结晶。",
+    "planted_chapter": 2,
+    "resolved_chapter": null,
+    "status": "planted"
+  },
+  {
+    "id": "fs_2_4",
+    "description": "[fs_2_4] 系统指出《基础火球术原理》存在多处错误，暗示主流魔法教育体系可能存在系统性缺陷或知识垄断。",
+    "planted_chapter": 2,
+    "resolved_chapter": null,
+    "status": "planted"
   }
 ]

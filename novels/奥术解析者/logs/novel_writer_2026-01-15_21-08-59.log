@@ -1,0 +1,112 @@
+2026-01-15 21:08:59 - novel_writer.workflow.runner - INFO - 日志文件: /Users/lutao/Documents/workspace/novel-writer/novels/奥术解析者/logs/novel_writer_2026-01-15_21-08-59.log
+2026-01-15 21:08:59 - novel_writer.workflow.runner - INFO - [Workflow] Step 1: Director 开始 - 第2章
+2026-01-15 21:08:59 - novel_writer.agents.base - INFO - [Agent] DirectorAgent 开始调用 - 输入大小: 32976 字符
+2026-01-15 21:08:59 - novel_writer.llm - INFO - [LLM] 开始调用 - Schema: DirectorOutput, Prompt大小: 33795 字符
+2026-01-15 21:09:38 - novel_writer.llm - INFO - [LLM] 调用完成 - Schema: DirectorOutput, 耗时: 39.1s, 响应大小: 1866 字符
+2026-01-15 21:09:38 - novel_writer.agents.base - INFO - [Agent] DirectorAgent 完成 - 耗时: 39.1s (结构化输出)
+2026-01-15 21:09:38 - novel_writer.workflow.runner - INFO - [Workflow] Step 1: Director 完成 - 耗时: 39.1s
+2026-01-15 21:09:38 - novel_writer.workflow.runner - INFO - [Workflow] Step 2: Plotter 开始 - 第2章
+2026-01-15 21:09:38 - novel_writer.agents.base - INFO - [Agent] PlotterAgent 开始调用 - 输入大小: 1332 字符
+2026-01-15 21:09:38 - novel_writer.llm - INFO - [LLM] 开始调用 - Schema: PlotterOutput, Prompt大小: 2149 字符
+2026-01-15 21:10:32 - novel_writer.llm - INFO - [LLM] 调用完成 - Schema: PlotterOutput, 耗时: 54.5s, 响应大小: 2631 字符
+2026-01-15 21:10:32 - novel_writer.agents.base - INFO - [Agent] PlotterAgent 完成 - 耗时: 54.5s (结构化输出)
+2026-01-15 21:10:32 - novel_writer.workflow.runner - INFO - [Workflow] Step 2: Plotter 完成 - 耗时: 54.5s
+2026-01-15 21:10:33 - novel_writer.workflow.runner - INFO - [Workflow] Step 4: Writer 开始 - 第2章 版本1
+2026-01-15 21:10:33 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 10191 字符
+2026-01-15 21:13:04 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 150.9s, 响应大小: 7076 字符
+2026-01-15 21:13:04 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 21:14:13 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 69.5s, 响应大小: 3000 字符
+2026-01-15 21:14:13 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 21:15:33 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 79.4s, 响应大小: 3383 字符
+2026-01-15 21:15:33 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 21:16:55 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 82.9s, 响应大小: 3401 字符
+2026-01-15 21:16:55 - novel_writer.workflow.runner - INFO - [Workflow] Step 4: Writer 完成 - 版本1, 耗时: 382.7s, 字数: 16860
+2026-01-15 21:16:55 - novel_writer.workflow.runner - INFO - [Workflow] Step 5: Reviewer 开始 - 版本1 第1次审核
+2026-01-15 21:16:55 - novel_writer.agents.base - INFO - [Agent] ReviewerAgent 开始调用 - 输入大小: 19245 字符
+2026-01-15 21:16:55 - novel_writer.llm - INFO - [LLM] 开始调用 - Schema: ReviewResult, Prompt大小: 20922 字符
+2026-01-15 21:18:02 - novel_writer.llm - INFO - [LLM] 调用完成 - Schema: ReviewResult, 耗时: 66.9s, 响应大小: 3637 字符
+2026-01-15 21:18:02 - novel_writer.agents.base - INFO - [Agent] ReviewerAgent 完成 - 耗时: 66.9s (结构化输出)
+2026-01-15 21:18:02 - novel_writer.workflow.runner - INFO - [Workflow] Step 5: Reviewer 完成 - 版本1 第1次, 耗时: 66.9s, 评分: 68
+2026-01-15 21:18:02 - novel_writer.agents.base - INFO - [Agent] ArchivistAgent 开始调用 - 输入大小: 17630 字符
+2026-01-15 21:18:02 - novel_writer.llm - INFO - [LLM] 开始调用 - Schema: ArchiveResult, Prompt大小: 18767 字符
+2026-01-15 21:18:34 - novel_writer.llm - INFO - [LLM] 调用完成 - Schema: ArchiveResult, 耗时: 31.3s, 响应大小: 1826 字符
+2026-01-15 21:18:34 - novel_writer.agents.base - INFO - [Agent] ArchivistAgent 完成 - 耗时: 31.3s (结构化输出)
+2026-01-15 21:18:35 - novel_writer.workflow.runner - INFO - [Workflow] Step 1: Director 开始 - 第3章
+2026-01-15 21:18:35 - novel_writer.agents.base - INFO - [Agent] DirectorAgent 开始调用 - 输入大小: 33087 字符
+2026-01-15 21:18:35 - novel_writer.llm - INFO - [LLM] 开始调用 - Schema: DirectorOutput, Prompt大小: 33906 字符
+2026-01-15 21:19:24 - novel_writer.llm - INFO - [LLM] 调用完成 - Schema: DirectorOutput, 耗时: 48.8s, 响应大小: 2259 字符
+2026-01-15 21:19:24 - novel_writer.agents.base - INFO - [Agent] DirectorAgent 完成 - 耗时: 48.8s (结构化输出)
+2026-01-15 21:19:24 - novel_writer.workflow.runner - INFO - [Workflow] Step 1: Director 完成 - 耗时: 48.8s
+2026-01-15 21:19:24 - novel_writer.workflow.runner - INFO - [Workflow] Step 2: Plotter 开始 - 第3章
+2026-01-15 21:19:24 - novel_writer.agents.base - INFO - [Agent] PlotterAgent 开始调用 - 输入大小: 1773 字符
+2026-01-15 21:19:24 - novel_writer.llm - INFO - [LLM] 开始调用 - Schema: PlotterOutput, Prompt大小: 2590 字符
+2026-01-15 21:20:16 - novel_writer.llm - INFO - [LLM] 调用完成 - Schema: PlotterOutput, 耗时: 52.7s, 响应大小: 2327 字符
+2026-01-15 21:20:16 - novel_writer.agents.base - INFO - [Agent] PlotterAgent 完成 - 耗时: 52.7s (结构化输出)
+2026-01-15 21:20:16 - novel_writer.workflow.runner - INFO - [Workflow] Step 2: Plotter 完成 - 耗时: 52.7s
+2026-01-15 21:20:17 - novel_writer.workflow.runner - INFO - [Workflow] Step 4: Writer 开始 - 第3章 版本1
+2026-01-15 21:20:17 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 10424 字符
+2026-01-15 21:22:51 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 153.8s, 响应大小: 6861 字符
+2026-01-15 21:22:51 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 21:23:52 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 61.5s, 响应大小: 2656 字符
+2026-01-15 21:23:52 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 21:25:06 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 74.0s, 响应大小: 3238 字符
+2026-01-15 21:25:06 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 21:25:50 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 44.0s, 响应大小: 1868 字符
+2026-01-15 21:25:50 - novel_writer.workflow.runner - INFO - [Workflow] Step 4: Writer 完成 - 版本1, 耗时: 333.3s, 字数: 14623
+2026-01-15 21:25:50 - novel_writer.workflow.runner - INFO - [Workflow] Step 5: Reviewer 开始 - 版本1 第1次审核
+2026-01-15 21:25:50 - novel_writer.agents.base - INFO - [Agent] ReviewerAgent 开始调用 - 输入大小: 17187 字符
+2026-01-15 21:25:50 - novel_writer.llm - INFO - [LLM] 开始调用 - Schema: ReviewResult, Prompt大小: 18864 字符
+2026-01-15 21:26:33 - novel_writer.llm - INFO - [LLM] 调用完成 - Schema: ReviewResult, 耗时: 43.0s, 响应大小: 2255 字符
+2026-01-15 21:26:33 - novel_writer.agents.base - INFO - [Agent] ReviewerAgent 完成 - 耗时: 43.0s (结构化输出)
+2026-01-15 21:26:33 - novel_writer.workflow.runner - INFO - [Workflow] Step 5: Reviewer 完成 - 版本1 第1次, 耗时: 43.0s, 评分: 35
+2026-01-15 21:26:33 - novel_writer.workflow.runner - INFO - [Workflow] Step 4: Writer 开始 - 第3章 版本2
+2026-01-15 21:26:33 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 10424 字符
+2026-01-15 21:29:08 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 155.0s, 响应大小: 6850 字符
+2026-01-15 21:29:08 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 21:30:57 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 108.9s, 响应大小: 4932 字符
+2026-01-15 21:30:57 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 21:31:56 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 59.1s, 响应大小: 2457 字符
+2026-01-15 21:31:56 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 21:33:04 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 67.5s, 响应大小: 2880 字符
+2026-01-15 21:33:04 - novel_writer.workflow.runner - INFO - [Workflow] Step 4: Writer 完成 - 版本2, 耗时: 390.6s, 字数: 17119
+2026-01-15 21:33:04 - novel_writer.workflow.runner - INFO - [Workflow] Step 5: Reviewer 开始 - 版本2 第1次审核
+2026-01-15 21:33:04 - novel_writer.agents.base - INFO - [Agent] ReviewerAgent 开始调用 - 输入大小: 19683 字符
+2026-01-15 21:33:04 - novel_writer.llm - INFO - [LLM] 开始调用 - Schema: ReviewResult, Prompt大小: 21360 字符
+2026-01-15 21:34:13 - novel_writer.llm - INFO - [LLM] 调用完成 - Schema: ReviewResult, 耗时: 69.2s, 响应大小: 3409 字符
+2026-01-15 21:34:13 - novel_writer.agents.base - INFO - [Agent] ReviewerAgent 完成 - 耗时: 69.2s (结构化输出)
+2026-01-15 21:34:13 - novel_writer.workflow.runner - INFO - [Workflow] Step 5: Reviewer 完成 - 版本2 第1次, 耗时: 69.2s, 评分: 45
+2026-01-15 21:34:13 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 28475 字符
+2026-01-15 21:36:27 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 134.5s, 响应大小: 6876 字符
+2026-01-15 21:36:27 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 21:37:30 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 62.7s, 响应大小: 2852 字符
+2026-01-15 21:37:30 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 21:38:36 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 65.7s, 响应大小: 2823 字符
+2026-01-15 21:38:36 - novel_writer.agents.base - INFO - [Agent] WriterAgent 开始调用 - 输入大小: 3218 字符
+2026-01-15 21:39:36 - novel_writer.agents.base - INFO - [Agent] WriterAgent 完成 - 耗时: 60.5s, 响应大小: 2540 字符
+2026-01-15 21:39:36 - novel_writer.agents.base - INFO - [Agent] ArchivistAgent 开始调用 - 输入大小: 15924 字符
+2026-01-15 21:39:36 - novel_writer.llm - INFO - [LLM] 开始调用 - Schema: ArchiveResult, Prompt大小: 17061 字符
+2026-01-15 21:40:09 - novel_writer.llm - INFO - [LLM] 调用完成 - Schema: ArchiveResult, 耗时: 32.4s, 响应大小: 1779 字符
+2026-01-15 21:40:09 - novel_writer.llm - WARNING - [LLM] JSON需要修复后解析成功 - Schema: ArchiveResult
+2026-01-15 21:40:09 - novel_writer.llm - ERROR - [LLM] JSON解析失败 - Schema: ArchiveResult, 原始错误: 3 validation errors for ArchiveResult
+character_updates.0.relationship_updates
+  Input should be a valid list [type=list_type, input_value='无', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/list_type
+character_updates.0.skill_updates
+  Input should be a valid list [type=list_type, input_value='火球术（优化版）...版的六至七成。', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/list_type
+character_updates.0.new_abilities
+  Input should be a valid list [type=list_type, input_value='无', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/list_type, 修复后错误: 3 validation errors for ArchiveResult
+character_updates.0.relationship_updates
+  Input should be a valid list [type=list_type, input_value='无', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/list_type
+character_updates.0.skill_updates
+  Input should be a valid list [type=list_type, input_value='火球术（优化版）...版的六至七成。', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/list_type
+character_updates.0.new_abilities
+  Input should be a valid list [type=list_type, input_value='无', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/list_type
+2026-01-15 21:40:09 - novel_writer.agents.base - ERROR - [Agent] ArchivistAgent 失败 - 耗时: 32.4s, 错误: ValueError: Failed to parse LLM response as JSON: 3 validation errors for ArchiveResult
+character_updates.0.relationship_updates
+  Input should be a valid list [type=list_type, input_value='无', input_type=str]
+  

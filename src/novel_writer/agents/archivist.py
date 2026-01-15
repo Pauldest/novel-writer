@@ -3,7 +3,7 @@
 from typing import Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from ..trace_store import TraceStore
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from .base import BaseAgent
 from ..models import Chapter, Character, TimelineEvent, Foreshadowing
@@ -22,12 +22,32 @@ class CharacterUpdate(BaseModel):
     notes: str = ""
     
     # 动态状态更新
-    skill_updates: list[str] = Field(default_factory=dict, description="技能变化列表，格式 '技能名: 描述/等级'")
+    skill_updates: list[str] = Field(default_factory=list, description="技能变化列表，格式 '技能名: 描述/等级'")
     new_abilities: list[str] = Field(default_factory=list, description="新获得的能力")
     lost_abilities: list[str] = Field(default_factory=list, description="失去的能力")
     power_level: Optional[str] = Field(default=None, description="境界/等级变化")
     equipment_add: list[str] = Field(default_factory=list, description="新装备")
     equipment_remove: list[str] = Field(default_factory=list, description="失去的装备")
+    
+    @field_validator(
+        'inventory_add', 'inventory_remove', 'relationship_updates',
+        'skill_updates', 'new_abilities', 'lost_abilities',
+        'equipment_add', 'equipment_remove',
+        mode='before'
+    )
+    @classmethod
+    def convert_string_to_list(cls, v):
+        """Convert string values like '无' to empty lists before validation."""
+        if v is None:
+            return []
+        if isinstance(v, str):
+            # Convert strings like "无", "无变化", "N/A", "" to empty list
+            if v.strip() in ("无", "无变化", "N/A", "", "无新增", "无变动", "暂无", "无新增或消耗物品"):
+                return []
+            else:
+                # Treat as a single-item list
+                return [v]
+        return v
 
 
 class ArchiveResult(BaseModel):
